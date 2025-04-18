@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -111,6 +111,52 @@ export default function AddReturnOrderModal({
       [name]: value
     }));
   };
+
+  // Calculate volumetric weight when dimensions change
+  useEffect(() => {
+    const { length, breadth, height } = formData;
+    
+    // Only calculate if all three dimensions are provided
+    if (length && breadth && height) {
+      const l = parseFloat(length);
+      const b = parseFloat(breadth);
+      const h = parseFloat(height);
+      
+      // Check if all values are valid numbers
+      if (!isNaN(l) && !isNaN(b) && !isNaN(h)) {
+        // Calculate volumetric weight: l * b * h / 5000
+        const volumetricWeight = ((l * b * h) / 5000).toFixed(2);
+        
+        setFormData(prev => ({
+          ...prev,
+          volumetricWeight
+        }));
+      }
+    }
+  }, [formData.length, formData.breadth, formData.height]);
+
+  // Calculate item volumetric weight when item dimensions change
+  useEffect(() => {
+    const { itemLength, itemBreadth, itemHeight } = formData;
+    
+    // Only calculate if all three dimensions are provided
+    if (itemLength && itemBreadth && itemHeight) {
+      const l = parseFloat(itemLength);
+      const b = parseFloat(itemBreadth);
+      const h = parseFloat(itemHeight);
+      
+      // Check if all values are valid numbers
+      if (!isNaN(l) && !isNaN(b) && !isNaN(h)) {
+        // Calculate volumetric weight: l * b * h / 5000
+        const itemVolWeight = ((l * b * h) / 5000).toFixed(2);
+        
+        setFormData(prev => ({
+          ...prev,
+          itemVolWeight
+        }));
+      }
+    }
+  }, [formData.itemLength, formData.itemBreadth, formData.itemHeight]);
 
   // Handle select change
   const handleSelectChange = (name: string, value: string) => {

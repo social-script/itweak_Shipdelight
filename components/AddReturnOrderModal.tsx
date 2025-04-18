@@ -39,8 +39,12 @@ export default function AddReturnOrderModal({
     gstDetails: false
   });
 
+  // Loading states for pincode lookups
+  const [isLoadingPickupLocation, setIsLoadingPickupLocation] = useState(false);
+  const [isLoadingDeliveryLocation, setIsLoadingDeliveryLocation] = useState(false);
+
   // Toggle section
-  const toggleSection = (section: string) => {
+  const toggleSection = (section: keyof typeof openSections) => {
     setOpenSections(prev => ({
       ...prev,
       [section]: !prev[section]
@@ -110,6 +114,76 @@ export default function AddReturnOrderModal({
       ...prev,
       [name]: value
     }));
+
+    // If the field is pickupPincode and it has 6 digits, fetch city and state
+    if (name === 'pickupPincode' && value.length === 6) {
+      fetchCityStateFromPincode(value, 'pickup');
+    }
+    
+    // If the field is deliveryPincode and it has 6 digits, fetch city and state
+    if (name === 'deliveryPincode' && value.length === 6) {
+      fetchCityStateFromPincode(value, 'delivery');
+    }
+  };
+
+  // Function to fetch city and state from pincode
+  const fetchCityStateFromPincode = async (pincode: string, type: 'pickup' | 'delivery') => {
+    try {
+      // Set loading state based on type
+      if (type === 'pickup') {
+        setIsLoadingPickupLocation(true);
+      } else {
+        setIsLoadingDeliveryLocation(true);
+      }
+      
+      const response = await fetch(`https://api.postalpincode.in/pincode/${pincode}`);
+      const data = await response.json();
+      
+      if (data && data[0]?.Status === 'Success' && data[0]?.PostOffice?.length > 0) {
+        const postOffice = data[0].PostOffice[0];
+        
+        if (type === 'pickup') {
+          setFormData(prev => ({
+            ...prev,
+            pickupCity: postOffice.District || postOffice.Name,
+            pickupState: postOffice.State
+          }));
+        } else {
+          setFormData(prev => ({
+            ...prev,
+            deliveryCity: postOffice.District || postOffice.Name,
+            deliveryState: postOffice.State
+          }));
+        }
+      } else {
+        // Handle invalid pincode
+        console.log(`Invalid ${type} pincode or no data found`);
+        
+        // Optional: Reset city and state fields if pincode is invalid
+        if (type === 'pickup') {
+          setFormData(prev => ({
+            ...prev,
+            pickupCity: '',
+            pickupState: ''
+          }));
+        } else {
+          setFormData(prev => ({
+            ...prev,
+            deliveryCity: '',
+            deliveryState: ''
+          }));
+        }
+      }
+    } catch (error) {
+      console.error(`Error fetching ${type} pincode data:`, error);
+    } finally {
+      // Reset loading state
+      if (type === 'pickup') {
+        setIsLoadingPickupLocation(false);
+      } else {
+        setIsLoadingDeliveryLocation(false);
+      }
+    }
   };
 
   // Calculate volumetric weight when dimensions change
@@ -557,25 +631,39 @@ export default function AddReturnOrderModal({
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="pickupCity">Pickup City <span className="text-red-500">*</span></Label>
-                    <Input 
-                      id="pickupCity"
-                      name="pickupCity"
-                      placeholder="Pickup City"
-                      value={formData.pickupCity}
-                      onChange={handleChange}
-                      required
-                    />
+                    <div className="relative">
+                      <Input 
+                        id="pickupCity"
+                        name="pickupCity"
+                        placeholder="Pickup City"
+                        value={formData.pickupCity}
+                        onChange={handleChange}
+                        required
+                      />
+                      {isLoadingPickupLocation && (
+                        <div className="absolute right-2 top-1/2 transform -translate-y-1/2">
+                          <div className="animate-spin h-4 w-4 border-2 border-orange-500 rounded-full border-t-transparent"></div>
+                        </div>
+                      )}
+                    </div>
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="pickupState">Pickup State <span className="text-red-500">*</span></Label>
-                    <Input 
-                      id="pickupState"
-                      name="pickupState"
-                      placeholder="Pickup State"
-                      value={formData.pickupState}
-                      onChange={handleChange}
-                      required
-                    />
+                    <div className="relative">
+                      <Input 
+                        id="pickupState"
+                        name="pickupState"
+                        placeholder="Pickup State"
+                        value={formData.pickupState}
+                        onChange={handleChange}
+                        required
+                      />
+                      {isLoadingPickupLocation && (
+                        <div className="absolute right-2 top-1/2 transform -translate-y-1/2">
+                          <div className="animate-spin h-4 w-4 border-2 border-orange-500 rounded-full border-t-transparent"></div>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -649,6 +737,7 @@ export default function AddReturnOrderModal({
                     <Input 
                       id="deliveryPincode"
                       name="deliveryPincode"
+                      placeholder="Delivery Pincode"
                       value={formData.deliveryPincode}
                       onChange={handleChange}
                       required
@@ -681,23 +770,39 @@ export default function AddReturnOrderModal({
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="deliveryCity">Delivery City <span className="text-red-500">*</span></Label>
-                    <Input 
-                      id="deliveryCity"
-                      name="deliveryCity"
-                      value={formData.deliveryCity}
-                      onChange={handleChange}
-                      required
-                    />
+                    <div className="relative">
+                      <Input 
+                        id="deliveryCity"
+                        name="deliveryCity"
+                        placeholder="Delivery City"
+                        value={formData.deliveryCity}
+                        onChange={handleChange}
+                        required
+                      />
+                      {isLoadingDeliveryLocation && (
+                        <div className="absolute right-2 top-1/2 transform -translate-y-1/2">
+                          <div className="animate-spin h-4 w-4 border-2 border-orange-500 rounded-full border-t-transparent"></div>
+                        </div>
+                      )}
+                    </div>
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="deliveryState">Delivery State <span className="text-red-500">*</span></Label>
-                    <Input 
-                      id="deliveryState"
-                      name="deliveryState"
-                      value={formData.deliveryState}
-                      onChange={handleChange}
-                      required
-                    />
+                    <div className="relative">
+                      <Input 
+                        id="deliveryState"
+                        name="deliveryState"
+                        placeholder="Delivery State"
+                        value={formData.deliveryState}
+                        onChange={handleChange}
+                        required
+                      />
+                      {isLoadingDeliveryLocation && (
+                        <div className="absolute right-2 top-1/2 transform -translate-y-1/2">
+                          <div className="animate-spin h-4 w-4 border-2 border-orange-500 rounded-full border-t-transparent"></div>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>

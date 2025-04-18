@@ -1,0 +1,97 @@
+# Product Requirements Document: Shipdelight API Integration for Reverse Pickups with QC
+
+## Overview
+This document outlines the implementation plan for integrating the Shipdelight API into the itweak_Sales application to enable reverse pickup creation with Quality Compliance (QC) enabled.
+
+## User Flow
+1. User fills out the Return Order form with all required details
+2. User submits the form
+3. System makes API calls to Shipdelight:
+   - Generate authentication token (if needed)
+   - Create a reverse pickup with QC enabled
+4. System displays success/error notifications to the user
+5. If successful, AWB number is displayed to the user
+
+## Implementation Tasks
+
+### Frontend Implementation
+- [ ] Update AddReturnOrderModal to include all required Shipdelight API fields
+- [ ] Add automatic volumetric weight calculation (l × b × h / 5000)
+- [ ] Add Pincode-based City/State lookup for pickup and delivery addresses
+- [ ] Create user feedback mechanism (toast notifications)
+- [ ] Connect form submission to backend API endpoint
+- [ ] Add validation for all required fields per Shipdelight API requirements
+
+### Backend API Implementation
+- [ ] Create token management service
+  - [ ] Implement token generation via Shipdelight API
+  - [ ] Add token storage mechanism
+  - [ ] Add token refresh logic (for 24h expiration)
+- [ ] Create reverse pickup endpoint
+  - [ ] Accept form data from frontend
+  - [ ] Transform data to Shipdelight API format
+  - [ ] Set QC to "y" for all orders
+  - [ ] Set auto_approve to "false" (for manual review)
+  - [ ] Make authenticated request to Shipdelight booking API
+  - [ ] Handle response and errors
+  - [ ] Return appropriate response to frontend
+
+### Data Mapping
+- [ ] Map Order Details → Basic API parameters
+  - [ ] Return Order No. → order_number
+  - [ ] Invoice Value → invoice_total
+  - [ ] Weight → actual_weight
+  - [ ] Dimensions → length, breadth, height
+  - [ ] Volumetric Weight → volumetric_weight
+  - [ ] Pay Type → payment_method (PPD/COD)
+- [ ] Map Item Details → line_items array
+  - [ ] Item Description → name
+  - [ ] SKU → sku
+  - [ ] Quantity → quantity
+  - [ ] Unit Price → unit_price
+  - [ ] Item Weight → actual_weight
+  - [ ] Return Reason → return_reasons
+- [ ] Map Pickup Details → pickup object
+  - [ ] Customer Name → vendor_name
+  - [ ] Contact Number → phone
+  - [ ] Address → address_1, address_2
+  - [ ] City → city
+  - [ ] State → state
+  - [ ] Pincode → postcode
+- [ ] Map Delivery Details → shipping object
+  - [ ] Vendor Name → first_name
+  - [ ] Contact Number → phone
+  - [ ] Address → address_1, address_2
+  - [ ] City → city
+  - [ ] State → state
+  - [ ] Pincode → postcode
+- [ ] Map GST Details → gst_details object (if invoice ≥ 50,000 INR)
+  - [ ] GST Number → gst_number
+  - [ ] CGST% → cgst
+  - [ ] SGST% → sgst
+  - [ ] IGST% → igst
+  - [ ] HSN Number → hsn_number
+  - [ ] E-way Bill Number → ewaybill_number
+
+### Testing
+- [ ] Test token generation and refreshing
+- [ ] Test reverse pickup creation with QC
+- [ ] Test error handling and user feedback
+- [ ] Test auto-calculation of volumetric weight
+- [ ] Test Pincode-based City/State lookup
+- [ ] Verify all data is correctly mapped to Shipdelight API format
+
+### Documentation
+- [ ] Document API endpoints
+- [ ] Document token management strategy
+- [ ] Create user guide for the Return Order form
+
+## Technical Considerations
+1. Security: API keys and tokens must not be exposed in frontend code
+2. Performance: Minimize API calls, implement efficient token management
+3. User Experience: Provide clear feedback, implement loading states
+4. Error Handling: Handle and display meaningful error messages
+
+## API References
+1. Token Generation API: https://appapi.shipdelight.com/generate-token
+2. AWB Generation API: https://appapi.shipdelight.com/booking 

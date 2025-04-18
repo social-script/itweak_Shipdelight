@@ -23,7 +23,7 @@ export default function Dashboard() {
     return (
       <div className="min-h-screen flex flex-col">
         <Header />
-        <main className="flex-1 container py-8 flex items-center justify-center">
+        <main className="flex-1 container mx-auto px-4 sm:px-6 lg:px-8 py-8 flex items-center justify-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-foreground"></div>
         </main>
       </div>
@@ -37,7 +37,7 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      <main className="flex-1 container py-8">
+      <main className="flex-1 container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="max-w-5xl mx-auto">
           <h1 className="text-3xl font-bold mb-8">Dashboard</h1>
           

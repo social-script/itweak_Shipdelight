@@ -15,7 +15,7 @@ export default function Home() {
     <div className="min-h-screen flex flex-col">
       <Header />
 
-      <main className="flex-1 container py-8">
+      <main className="flex-1 container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="max-w-5xl mx-auto">
           <h1 className="text-3xl font-bold text-center mb-8">
             Next.js Auth Boilerplate
@@ -54,7 +54,7 @@ export default function Home() {
       </main>
 
       <footer className="border-t py-6">
-        <div className="container">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <p className="text-sm text-center text-muted-foreground">
             © {new Date().getFullYear()} Next.js Auth Boilerplate. All rights reserved.
           </p>

@@ -254,6 +254,7 @@ export default function AddReturnOrderModal({
     'itemDescription',
     'quantity',
     'unitPrice',
+    'reasonForItem',
     // Pickup Details
     'customerName',
     'pickupContactNumber',
@@ -308,6 +309,7 @@ export default function AddReturnOrderModal({
     itemDescription: 'Item Description',
     quantity: 'Quantity',
     unitPrice: 'Unit Price',
+    reasonForItem: 'Reason for Item',
     customerName: 'Customer Name',
     pickupContactNumber: 'Pickup Contact Number',
     pickupPincode: 'Pickup Pincode',
@@ -520,6 +522,19 @@ export default function AddReturnOrderModal({
     try {
       // Show loading toast
       const loadingToast = toast.loading('Creating reverse pickup...');
+      
+      // Log the payload to verify the return_reasons field is being sent correctly
+      console.log('Submitting payload with line_items:', JSON.stringify({
+        ...formData,
+        line_items: [{
+          name: formData.itemDescription,
+          quantity: formData.quantity,
+          sku: formData.sku || "",
+          unit_price: formData.unitPrice,
+          actual_weight: formData.actualWeight || formData.weight,
+          return_reasons: formData.reasonForItem || ""
+        }]
+      }, null, 2));
       
       // Call the API to create reverse pickup
       const response = await fetch('/api/shipdelight/reverse-pickup', {
@@ -874,8 +889,16 @@ export default function AddReturnOrderModal({
                       <SelectItem value="Size and fit issue">Size and fit issue</SelectItem>
                       <SelectItem value="Product Quality">Product Quality</SelectItem>
                       <SelectItem value="Replacement">Replacement</SelectItem>
+                      <SelectItem value="Damaged product">Damaged product</SelectItem>
+                      <SelectItem value="Wrong product received">Wrong product received</SelectItem>
+                      <SelectItem value="Defective item">Defective item</SelectItem>
+                      <SelectItem value="Changed mind">Changed mind</SelectItem>
+                      <SelectItem value="Other">Other</SelectItem>
                     </SelectContent>
                   </Select>
+                  <p className="text-xs text-gray-500 mt-1">
+                    This reason will be sent to the courier service as the return reason.
+                  </p>
                 </div>
 
                 <div className="pt-4">

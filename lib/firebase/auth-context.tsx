@@ -20,6 +20,7 @@ interface AuthContextType {
   signInWithEmail: (email: string, password: string) => Promise<void>;
   createUserWithEmail: (email: string, password: string, displayName: string) => Promise<void>;
   logout: () => Promise<void>;
+  hasValidTokens: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -27,15 +28,45 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [hasValidTokens, setHasValidTokens] = useState(false);
+
+  // Check if user has valid tokens
+  const checkTokens = async (currentUser: User | null) => {
+    if (!currentUser) {
+      setHasValidTokens(false);
+      return;
+    }
+    
+    try {
+      // This will throw an error if the token is invalid/expired
+      const token = await currentUser.getIdToken(false);
+      setHasValidTokens(!!token);
+    } catch (error) {
+      console.error('Error checking tokens:', error);
+      setHasValidTokens(false);
+    }
+  };
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
+      checkTokens(user);
       setLoading(false);
     });
 
     return () => unsubscribe();
   }, []);
+
+  // Periodically check token validity (every 5 minutes)
+  useEffect(() => {
+    if (!user) return;
+    
+    const tokenCheckInterval = setInterval(() => {
+      checkTokens(user);
+    }, 5 * 60 * 1000);
+    
+    return () => clearInterval(tokenCheckInterval);
+  }, [user]);
 
   const signInWithGoogle = async () => {
     try {
@@ -123,6 +154,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         signInWithEmail,
         createUserWithEmail,
         logout,
+        hasValidTokens,
       }}
     >
       {children}

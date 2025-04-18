@@ -1,0 +1,758 @@
+'use client';
+
+import { useState } from 'react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import { ChevronDown, ChevronUp, Plus } from 'lucide-react';
+
+interface AddReturnOrderModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+export default function AddReturnOrderModal({
+  isOpen,
+  onClose
+}: AddReturnOrderModalProps) {
+  // State for accordion sections
+  const [openSections, setOpenSections] = useState({
+    orderDetails: true,
+    itemDetails: false,
+    pickupDetails: false,
+    deliveryDetails: false,
+    gstDetails: false
+  });
+
+  // Toggle section
+  const toggleSection = (section: string) => {
+    setOpenSections(prev => ({
+      ...prev,
+      [section]: !prev[section]
+    }));
+  };
+
+  // Form data state
+  const [formData, setFormData] = useState({
+    // Order Details
+    forwardAirwayBillNo: '',
+    forwardOrderNo: '',
+    returnOrderNo: '',
+    transactionId: '',
+    payType: 'Prepaid',
+    invoiceValue: '',
+    weight: '',
+    volumetricWeight: '',
+    length: '',
+    breadth: '',
+    height: '',
+    
+    // Item Details
+    itemDescription: 'GO ALT TECHNOLOGY',
+    sku: '',
+    quantity: '',
+    actualWeight: '',
+    unitPrice: '',
+    itemVolWeight: '',
+    itemLength: '',
+    itemBreadth: '',
+    itemHeight: '',
+    reasonForItem: '',
+    
+    // Pickup Details
+    customerName: '',
+    pickupContactNumber: '',
+    pickupPincode: '',
+    pickupAddressLine1: '',
+    pickupAddressLine2: '',
+    pickupCity: '',
+    pickupState: '',
+    
+    // Delivery Details
+    deliveryLocation: 'GO ALT TECHNOLOGIES',
+    vendorName: 'GO ALT TECHNOLOGIES',
+    customerLastName: '',
+    deliveryContactNumber: '9741623600',
+    deliveryPincode: '560037',
+    deliveryAddressLine1: 'iTweak, 35/1B, CRM Sowbhagya Complex, Varthur Main Road, Marathalli,Near Spice Garden Bus Stop, Bangalore',
+    deliveryAddressLine2: '',
+    deliveryCity: 'BANGALORE',
+    deliveryState: 'KARNATAKA',
+    
+    // GST Details
+    gstNumber: '',
+    hsnNumber: '',
+    eWayBillNumber: '',
+    cgstPercentage: '',
+    sgstPercentage: '',
+    igstPercentage: ''
+  });
+
+  // Handle input change
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  // Handle select change
+  const handleSelectChange = (name: string, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  // Handle form submission
+  const handleSubmit = () => {
+    console.log('Form submitted:', formData);
+    // Add your form submission logic here
+    onClose();
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="text-xl">
+            Add Return Order
+          </DialogTitle>
+        </DialogHeader>
+
+        <div className="space-y-4">
+          {/* Order Details Section */}
+          <div className="border rounded-lg overflow-hidden">
+            <div 
+              className={`flex justify-between items-center p-4 cursor-pointer ${openSections.orderDetails ? 'border-b' : ''} ${openSections.orderDetails ? 'text-red-500' : ''}`}
+              onClick={() => toggleSection('orderDetails')}
+            >
+              <h3 className="font-medium">Order Details</h3>
+              {openSections.orderDetails ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
+            </div>
+
+            {openSections.orderDetails && (
+              <div className="p-4 space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="forwardAirwayBillNo">Forward AirwayBill No.</Label>
+                    <Input 
+                      id="forwardAirwayBillNo"
+                      name="forwardAirwayBillNo"
+                      placeholder="Enter Forward AirwayBill Number"
+                      value={formData.forwardAirwayBillNo}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="forwardOrderNo">Forward Order No.</Label>
+                    <Input 
+                      id="forwardOrderNo"
+                      name="forwardOrderNo"
+                      placeholder="Enter Forward Order Number"
+                      value={formData.forwardOrderNo}
+                      onChange={handleChange}
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="returnOrderNo">Return Order No. <span className="text-red-500">*</span></Label>
+                    <Input 
+                      id="returnOrderNo"
+                      name="returnOrderNo"
+                      placeholder="Enter Order Number"
+                      value={formData.returnOrderNo}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="transactionId">Transaction Id</Label>
+                    <Input 
+                      id="transactionId"
+                      name="transactionId"
+                      placeholder="Enter Transaction Id"
+                      value={formData.transactionId}
+                      onChange={handleChange}
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="payType">Pay Type</Label>
+                    <Select 
+                      value={formData.payType} 
+                      onValueChange={(value) => handleSelectChange('payType', value)}
+                    >
+                      <SelectTrigger id="payType">
+                        <SelectValue placeholder="Select Pay Type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Prepaid">Prepaid</SelectItem>
+                        <SelectItem value="COD">COD</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="invoiceValue">Invoice Value <span className="text-red-500">*</span></Label>
+                    <Input 
+                      id="invoiceValue"
+                      name="invoiceValue"
+                      placeholder="0"
+                      value={formData.invoiceValue}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="weight">Weight (KG) <span className="text-red-500">*</span></Label>
+                    <Input 
+                      id="weight"
+                      name="weight"
+                      placeholder="Weight (In KG)"
+                      value={formData.weight}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="volumetricWeight">Volumetric Weight (KG) (l x b x h/5000) <span className="text-red-500">*</span></Label>
+                    <Input 
+                      id="volumetricWeight"
+                      name="volumetricWeight"
+                      placeholder="Volumetric Weight (In KG)"
+                      value={formData.volumetricWeight}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="length">Length (CM) <span className="text-red-500">*</span></Label>
+                    <Input 
+                      id="length"
+                      name="length"
+                      placeholder="Length (In CM)"
+                      value={formData.length}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="breadth">Breadth (CM) <span className="text-red-500">*</span></Label>
+                    <Input 
+                      id="breadth"
+                      name="breadth"
+                      placeholder="Breadth (In CM)"
+                      value={formData.breadth}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="height">Height (CM) <span className="text-red-500">*</span></Label>
+                    <Input 
+                      id="height"
+                      name="height"
+                      placeholder="Height (In CM)"
+                      value={formData.height}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Item Details Section */}
+          <div className="border rounded-lg overflow-hidden">
+            <div 
+              className={`flex justify-between items-center p-4 cursor-pointer ${openSections.itemDetails ? 'border-b' : ''} ${openSections.itemDetails ? 'text-red-500' : ''}`}
+              onClick={() => toggleSection('itemDetails')}
+            >
+              <h3 className="font-medium">Item Details</h3>
+              {openSections.itemDetails ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
+            </div>
+
+            {openSections.itemDetails && (
+              <div className="p-4 space-y-4">
+                <div className="bg-gray-50 p-3 border rounded-md mb-4">
+                  <div className="font-medium">Original Item 1</div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="itemDescription">Item Description <span className="text-red-500">*</span></Label>
+                    <Select 
+                      value={formData.itemDescription} 
+                      onValueChange={(value) => handleSelectChange('itemDescription', value)}
+                    >
+                      <SelectTrigger id="itemDescription">
+                        <SelectValue placeholder="Search Product" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="GO ALT TECHNOLOGY">GO ALT TECHNOLOGY</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="sku">SKU</Label>
+                    <Input 
+                      id="sku"
+                      name="sku"
+                      placeholder="SKU"
+                      value={formData.sku}
+                      onChange={handleChange}
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="quantity">Quantity <span className="text-red-500">*</span></Label>
+                    <Input 
+                      id="quantity"
+                      name="quantity"
+                      placeholder="Quantity"
+                      value={formData.quantity}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="actualWeight">Actual Weight (KG)</Label>
+                    <Input 
+                      id="actualWeight"
+                      name="actualWeight"
+                      placeholder="Actual Weight (In KG)"
+                      value={formData.actualWeight}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="unitPrice">Unit Price <span className="text-red-500">*</span></Label>
+                    <Input 
+                      id="unitPrice"
+                      name="unitPrice"
+                      placeholder="Unit Price (In INR)"
+                      value={formData.unitPrice}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="itemVolWeight">Volumetric Weight (KG)</Label>
+                    <Input 
+                      id="itemVolWeight"
+                      name="itemVolWeight"
+                      placeholder="Volumetric Weight (In KG)"
+                      value={formData.itemVolWeight}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="itemLength">Length (CM)</Label>
+                    <Input 
+                      id="itemLength"
+                      name="itemLength"
+                      placeholder="Length (In CM)"
+                      value={formData.itemLength}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="itemBreadth">Breadth (CM)</Label>
+                    <Input 
+                      id="itemBreadth"
+                      name="itemBreadth"
+                      placeholder="Breadth (In CM)"
+                      value={formData.itemBreadth}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="itemHeight">Height (CM)</Label>
+                    <Input 
+                      id="itemHeight"
+                      name="itemHeight"
+                      placeholder="Height (In CM)"
+                      value={formData.itemHeight}
+                      onChange={handleChange}
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="reasonForItem">Reason for Item <span className="text-red-500">*</span></Label>
+                  <Select 
+                    value={formData.reasonForItem} 
+                    onValueChange={(value) => handleSelectChange('reasonForItem', value)}
+                  >
+                    <SelectTrigger id="reasonForItem">
+                      <SelectValue placeholder="Select Reason" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Size and fit issue">Size and fit issue</SelectItem>
+                      <SelectItem value="Product Quality">Product Quality</SelectItem>
+                      <SelectItem value="Replacement">Replacement</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="pt-4">
+                  <Button type="button" className="flex items-center gap-1 bg-orange-500 hover:bg-orange-600 text-white">
+                    <Plus className="h-4 w-4" /> Add More Items
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Pickup Details Section */}
+          <div className="border rounded-lg overflow-hidden">
+            <div 
+              className={`flex justify-between items-center p-4 cursor-pointer ${openSections.pickupDetails ? 'border-b' : ''} ${openSections.pickupDetails ? 'text-red-500' : ''}`}
+              onClick={() => toggleSection('pickupDetails')}
+            >
+              <h3 className="font-medium">Pickup Details</h3>
+              {openSections.pickupDetails ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
+            </div>
+
+            {openSections.pickupDetails && (
+              <div className="p-4 space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="customerName">Customer Name <span className="text-red-500">*</span></Label>
+                    <Input 
+                      id="customerName"
+                      name="customerName"
+                      placeholder="Customer Name"
+                      value={formData.customerName}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="pickupContactNumber">Contact Number <span className="text-red-500">*</span></Label>
+                    <Input 
+                      id="pickupContactNumber"
+                      name="pickupContactNumber"
+                      placeholder="Contact Number"
+                      value={formData.pickupContactNumber}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="pickupPincode">Pickup Pincode <span className="text-red-500">*</span></Label>
+                  <Input 
+                    id="pickupPincode"
+                    name="pickupPincode"
+                    placeholder="Pickup Pincode"
+                    value={formData.pickupPincode}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="pickupAddressLine1">Pickup Address Line 1 <span className="text-red-500">*</span></Label>
+                  <Input 
+                    id="pickupAddressLine1"
+                    name="pickupAddressLine1"
+                    placeholder="Pickup Address Line 1"
+                    value={formData.pickupAddressLine1}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="pickupAddressLine2">Pickup Address Line 2</Label>
+                  <Input 
+                    id="pickupAddressLine2"
+                    name="pickupAddressLine2"
+                    placeholder="Pickup Address Line 2"
+                    value={formData.pickupAddressLine2}
+                    onChange={handleChange}
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="pickupCity">Pickup City <span className="text-red-500">*</span></Label>
+                    <Input 
+                      id="pickupCity"
+                      name="pickupCity"
+                      placeholder="Pickup City"
+                      value={formData.pickupCity}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="pickupState">Pickup State <span className="text-red-500">*</span></Label>
+                    <Input 
+                      id="pickupState"
+                      name="pickupState"
+                      placeholder="Pickup State"
+                      value={formData.pickupState}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Delivery Details Section */}
+          <div className="border rounded-lg overflow-hidden">
+            <div 
+              className={`flex justify-between items-center p-4 cursor-pointer ${openSections.deliveryDetails ? 'border-b' : ''} ${openSections.deliveryDetails ? 'text-red-500' : ''}`}
+              onClick={() => toggleSection('deliveryDetails')}
+            >
+              <h3 className="font-medium">Delivery Details</h3>
+              {openSections.deliveryDetails ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
+            </div>
+
+            {openSections.deliveryDetails && (
+              <div className="p-4 space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="deliveryLocation">Select Delivery Location</Label>
+                  <Select 
+                    value={formData.deliveryLocation} 
+                    onValueChange={(value) => handleSelectChange('deliveryLocation', value)}
+                  >
+                    <SelectTrigger id="deliveryLocation">
+                      <SelectValue placeholder="Select Delivery Location" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="GO ALT TECHNOLOGIES">GO ALT TECHNOLOGIES</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="vendorName">Vendor Name <span className="text-red-500">*</span></Label>
+                    <Input 
+                      id="vendorName"
+                      name="vendorName"
+                      placeholder="GO ALT TECHNOLOGIES"
+                      value={formData.vendorName}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="customerLastName">Customer Last Name</Label>
+                    <Input 
+                      id="customerLastName"
+                      name="customerLastName"
+                      placeholder="Customer Last Name"
+                      value={formData.customerLastName}
+                      onChange={handleChange}
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="deliveryContactNumber">Contact Number <span className="text-red-500">*</span></Label>
+                    <Input 
+                      id="deliveryContactNumber"
+                      name="deliveryContactNumber"
+                      value={formData.deliveryContactNumber}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="deliveryPincode">Delivery Pincode <span className="text-red-500">*</span></Label>
+                    <Input 
+                      id="deliveryPincode"
+                      name="deliveryPincode"
+                      value={formData.deliveryPincode}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="deliveryAddressLine1">Delivery Address Line 1 <span className="text-red-500">*</span></Label>
+                  <Input 
+                    id="deliveryAddressLine1"
+                    name="deliveryAddressLine1"
+                    value={formData.deliveryAddressLine1}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="deliveryAddressLine2">Delivery Address Line 2</Label>
+                  <Input 
+                    id="deliveryAddressLine2"
+                    name="deliveryAddressLine2"
+                    placeholder="Delivery Address Line 2"
+                    value={formData.deliveryAddressLine2}
+                    onChange={handleChange}
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="deliveryCity">Delivery City <span className="text-red-500">*</span></Label>
+                    <Input 
+                      id="deliveryCity"
+                      name="deliveryCity"
+                      value={formData.deliveryCity}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="deliveryState">Delivery State <span className="text-red-500">*</span></Label>
+                    <Input 
+                      id="deliveryState"
+                      name="deliveryState"
+                      value={formData.deliveryState}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* GST Details Section */}
+          <div className="border rounded-lg overflow-hidden">
+            <div 
+              className={`flex justify-between items-center p-4 cursor-pointer ${openSections.gstDetails ? 'border-b' : ''} ${openSections.gstDetails ? 'text-red-500' : ''}`}
+              onClick={() => toggleSection('gstDetails')}
+            >
+              <h3 className="font-medium">GST Details (Above ₹49,999)</h3>
+              {openSections.gstDetails ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
+            </div>
+
+            {openSections.gstDetails && (
+              <div className="p-4 space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="gstNumber">GST Number</Label>
+                    <Input 
+                      id="gstNumber"
+                      name="gstNumber"
+                      placeholder="GST Number"
+                      value={formData.gstNumber}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="hsnNumber">HSN Number</Label>
+                    <Input 
+                      id="hsnNumber"
+                      name="hsnNumber"
+                      placeholder="HSN Number"
+                      value={formData.hsnNumber}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="eWayBillNumber">Ewaybill Number</Label>
+                    <Input 
+                      id="eWayBillNumber"
+                      name="eWayBillNumber"
+                      placeholder="Ewaybill Number"
+                      value={formData.eWayBillNumber}
+                      onChange={handleChange}
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="cgstPercentage">CGST%</Label>
+                    <Input 
+                      id="cgstPercentage"
+                      name="cgstPercentage"
+                      placeholder="CGST%"
+                      value={formData.cgstPercentage}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="sgstPercentage">SGST%</Label>
+                    <Input 
+                      id="sgstPercentage"
+                      name="sgstPercentage"
+                      placeholder="SGST%"
+                      value={formData.sgstPercentage}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="igstPercentage">IGST%</Label>
+                    <Input 
+                      id="igstPercentage"
+                      name="igstPercentage"
+                      placeholder="IGST%"
+                      value={formData.igstPercentage}
+                      onChange={handleChange}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <DialogFooter className="mt-6">
+          <DialogClose asChild>
+            <Button variant="outline" type="button">Cancel</Button>
+          </DialogClose>
+          <Button 
+            type="button" 
+            onClick={handleSubmit}
+            className="bg-orange-500 hover:bg-orange-600 text-white"
+          >
+            Save
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+} 

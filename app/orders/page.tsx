@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useAuth } from '@/lib/firebase/auth-context';
 import Header from '@/components/Header';
 import OrderDetailsModal from '@/components/OrderDetailsModal';
+import AddReturnOrderModal from '@/components/AddReturnOrderModal';
 import { 
   Card, 
   CardContent
@@ -34,13 +35,20 @@ export default function Orders() {
     end: '2025-04-18 23:59'
   });
   
-  // Modal state
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  // Order details modal state
+  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
+
+  // Add Return Order modal state
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   const openOrderDetails = (order: any) => {
     setSelectedOrder(order);
-    setIsModalOpen(true);
+    setIsOrderModalOpen(true);
+  };
+
+  const openAddReturnOrder = () => {
+    setIsAddModalOpen(true);
   };
 
   // Mock data for returns
@@ -263,7 +271,11 @@ export default function Orders() {
                   Showing 1 of {totalOrders} of {totalOrders} Returns
                 </div>
                 <div className="flex items-center gap-2">
-                  <Button variant="outline" className="flex items-center gap-1">
+                  <Button 
+                    variant="outline" 
+                    className="flex items-center gap-1"
+                    onClick={openAddReturnOrder}
+                  >
                     <Upload className="h-4 w-4" />
                     <span>Import / Add Returns</span>
                   </Button>
@@ -348,11 +360,17 @@ export default function Orders() {
       {/* Order Details Modal */}
       {selectedOrder && (
         <OrderDetailsModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
+          isOpen={isOrderModalOpen}
+          onClose={() => setIsOrderModalOpen(false)}
           order={selectedOrder}
         />
       )}
+
+      {/* Add Return Order Modal */}
+      <AddReturnOrderModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+      />
     </div>
   );
 } 

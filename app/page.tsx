@@ -18,7 +18,7 @@ export default function Home() {
       <main className="flex-1 container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="max-w-5xl mx-auto">
           <h1 className="text-3xl font-bold text-center mb-8">
-            Next.js Auth Boilerplate
+            Itweak SD
           </h1>
 
           {loading ? (
@@ -56,7 +56,7 @@ export default function Home() {
       <footer className="border-t py-6">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <p className="text-sm text-center text-muted-foreground">
-            © {new Date().getFullYear()} Next.js Auth Boilerplate. All rights reserved.
+            © {new Date().getFullYear()} Itweak SD. All rights reserved.
           </p>
         </div>
       </footer>

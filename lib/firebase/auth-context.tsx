@@ -124,13 +124,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signInWithGoogle = async () => {
     try {
+      toast.error('Google sign-in has been disabled by the administrator');
+      throw new Error('Google sign-in has been disabled');
+      
+      // The following code is intentionally unreachable
+      /*
       setLoading(true);
       const result = await signInWithPopup(auth, googleProvider);
       await setCookiesForUser(result.user);
       toast.success('Successfully signed in!');
+      */
     } catch (error) {
       console.error('Error signing in with Google:', error);
-      toast.error('Failed to sign in with Google');
+      toast.error('Google sign-in is not available');
       removeCookies();
     } finally {
       setLoading(false);

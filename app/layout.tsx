@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Next.js Auth Boilerplate",
+  title: "Itweak SD",
   description: "Next.js authentication boilerplate with Firebase",
 };
 

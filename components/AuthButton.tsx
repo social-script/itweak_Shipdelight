@@ -5,9 +5,11 @@ import { useAuth } from "@/lib/firebase/auth-context";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { LogIn, LogOut } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useRouter } from "next/navigation";
 
 export default function AuthButton() {
-  const { user, loading, hasValidTokens, signInWithGoogle, logout } = useAuth();
+  const { user, loading, hasValidTokens, logout } = useAuth();
+  const router = useRouter();
 
   if (loading) {
     return (
@@ -51,9 +53,9 @@ export default function AuthButton() {
   }
 
   return (
-    <Button onClick={signInWithGoogle} size="sm" className="button-gradient">
+    <Button onClick={() => router.push('/login')} size="sm" className="button-gradient">
       <LogIn className="h-4 w-4 mr-2" />
-      Sign in with Google
+      Sign In
     </Button>
   );
 } 

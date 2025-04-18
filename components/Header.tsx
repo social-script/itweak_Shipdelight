@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/lib/firebase/auth-context';
 import AuthButton from './AuthButton';
-import { Home, LayoutDashboard, User } from 'lucide-react';
+import { Home, LayoutDashboard, User, Package } from 'lucide-react';
 
 export default function Header() {
   const pathname = usePathname();
@@ -23,6 +23,12 @@ export default function Header() {
       href: '/dashboard',
       label: 'Dashboard',
       icon: <LayoutDashboard className="h-4 w-4 mr-2" />,
+      isAlwaysVisible: false
+    },
+    {
+      href: '/orders',
+      label: 'Orders',
+      icon: <Package className="h-4 w-4 mr-2" />,
       isAlwaysVisible: false
     },
     {

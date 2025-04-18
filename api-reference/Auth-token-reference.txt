@@ -1,0 +1,17 @@
+1. Token Generation API
+URL: https://appapi.shipdelight.com/generate-token?api_key=63e4f58629XXXXXXXXXX
+Token Validity: 24 Hours
+Response:
+{
+"success": true,
+"status_code": 200,
+"message": "Tenant Verified & Token Generated",
+"data": {
+"access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0ZW5hbnRfaWQiOiI2M2U0ZjU4NjI5MWZkNzc4Yz
+kwMWM2MzciLCJ1c2VyX2lkIjoiNjNlNGY1ODcyOTFmZDc3OGM5MDFjNjQxIiwi",
+"refresh_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0ZW5hbnRfaWQiOiI2M2U0ZjU4NjI5MWZkNzc4Yz
+kwMWM2MzciLCJ1c2VyX2lkIjoiNjNlNGY1ODcyOTFmZDc3OGM5MDFjNjQxIiw ",
+"expires_at": 1701761080
+},
+"created_on": null
+}

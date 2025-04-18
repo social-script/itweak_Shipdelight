@@ -1,0 +1,218 @@
+AWB Generation API:
+URL: https://appapi.shipdelight.com/booking
+Method: POST
+Authorization: Type – Bearer Token
+
+Attributes
+Mandatory / Optional Fields
+
+Attribute	Values Expected / Max Length	Validation
+payment_method (Yes)	For Prepaid/Online Payment: PPD
+For COD: COD	Input must be in capitals - PPD or COD
+payment_method should not be blank
+auto_approve (Yes)	true / false	true: auto AWB assignment
+false: order will be added on the InstaLogix panel
+order_number (Yes)	Unique order number
+length (20)	order_number should not be blank
+service_type (Yes)	"f" - Forward
+"r" - Reverse	service_type should not be blank
+transaction_ref_no (No)	Reference number
+length (20)	
+discount_total (No)	Numeric	Only display purpose on shipping label
+cod_shipping_charge (No)	Numeric	Only display purpose on shipping label
+invoice_total (Yes)	Numeric	invoice_total must be > 0
+manual_courier (No)	varchar	Pass the alias name which is given by SD
+Invoice_number (No)	varchar	
+cod_total (Yes)	Numeric	For PPD Orders, value must be "0"
+length (No)	Numeric
+Values in "cm"	
+breadth (No)	Numeric
+Values in "cm"	
+height (No)	Numeric
+Values in "cm"	
+actual_weight (Yes)	Numeric
+Values in KG	actual_weight must be > 0
+volumetric_weight (No)	Numeric
+Values in KG	
+forward_ref (No)		
+qc (Yes)	"n" - Return without QC
+"y" - Return with QC	qc should not be blank for Reverse orders
+"shipping" (Delivery)
+
+Attribute	Type	Validation
+first_name (Yes)	varchar	first_name should not be blank
+last_name (No)	varchar	
+address_1 (Yes)	varchar	address_1 should not be blank
+address_2 (No)	varchar	
+city (Yes)	varchar	city should not be blank
+state (Yes)	varchar	state should not be blank
+postcode (Yes)	Numeric (6 Digit)	postcode should not be blank
+country (No)	varchar	
+phone (Yes)	Numeric (10 Digit)	phone should not be blank
+cust_email (No)	varchar	
+"line_items"
+
+Attribute	Type	Validation
+name (Yes)	varchar	name should not be blank
+quantity (Yes)	Numeric	quantity should not be blank
+sku (No)	varchar	
+product_id (No)	varchar	Required for Return & Exchange process
+variant_id (No)	varchar	Required for Return & Exchange process
+unit_price (Yes)	Numeric	unit_price should not be blank, must be > 0
+actual_weight (Yes)	Numeric	actual_weight must not be blank and > 0
+item_color (No)	varchar	
+item_size (No)	varchar	
+item_category (No)	varchar	
+item_image (No)	varchar	
+item_brand (No)	varchar	
+item_imei (No)	varchar	QC RVP Check Points
+special_ins (No)	varchar	
+return_reasons (No)	varchar	
+item_tag (No)	varchar	
+item_box (No)	varchar	
+"pickup"
+
+Attribute	Type	Validation
+vendor_name (Yes)	varchar	vendor_name should not be blank
+address_1 (Yes)	varchar	address_1 should not be blank
+address_2 (No)	varchar	
+city (Yes)	varchar	city should not be blank
+state (Yes)	varchar	state should not be blank
+postcode (Yes)	Numeric (6 Digit)	postcode should not be blank
+country (No)	varchar	
+phone (Yes)	Numeric (10 Digit)	phone should not be blank
+"rto"
+(Same structure and validations as "pickup")
+
+"gst_details" (Mandatory for Invoice value >= 50,000 INR)
+
+Attribute	Type	Description
+gst_number	15 characters	Seller GST No.
+cgst	Numeric	CGST % Value
+igst	Numeric	IGST % Value
+sgst	Numeric	SGST % Value
+hsn_number	varchar	
+ewaybill_number	Numeric (12 Digit)
+
+Request Body:
+{
+"auto_approve": "true",
+"order_number": "ORD1234",
+"service_type": "f",
+"invoice_number": "ORD1234"
+,
+"transaction_ref_no": "ORD1234",
+"payment_method": "PPD",
+"discount_total": "0.00",
+"cod_shipping_charge": "00.00",
+"invoice_total": "3000",
+"cod_total": "0.0",
+"manual_courier": "Ecom Express"
+,
+"length": "30",
+"breadth": "30",
+"height": "30",
+"actual_weight": "0.57",
+"volumetric_weight": "0.57",
+"qc": "n",
+"forward_ref": ""
+,
+"shipping": {
+"first_name": "Test Customer "
+,
+"last_name": "Kumar",
+"address_1": "Do not deliver, this is test booking",
+"address_2": ""
+,
+"city": "New Delhi",
+"state": "Delhi",
+"postcode": "110011",
+"country": "India",
+"phone": "1234567890",
+"cust_email": ""
+},
+"line_items": [
+{
+"name": "This is Product Name",
+"quantity": "1",
+"sku": "BJINCC",
+"product_id": "801705902"
+,
+"variant_id": "433896577"
+,
+"unit_price": "2899",
+"actual_weight": ""
+,
+"item_color": ""
+,
+"item_size": ""
+,
+"item_category": ""
+,
+"item_image": "https://abc.jpg",
+"item_brand": ""
+,
+"item_imei": ""
+,
+"special_ins": ""
+,
+"return_reasons": ""
+,
+"item_tag": "Yes",
+"item_box": "Yes"
+}
+],
+"pickup": {
+"vendor_name": "Test Vendor",
+"address_1": "Demo Address, do not pick up",
+"address_2": ""
+,
+"city": "New Delhi",
+"state": "Delhi",
+"postcode": "110001",
+"country": "India",
+"phone": "1234567890"
+},
+"rto": {
+"vendor_name": "Test Vendor",
+"address_1": "Do not pick",
+"address_2": " "
+,
+"city": "New Delhi",
+"state": "Delhi",
+"postcode": "110001",
+"country": "India",
+"phone": "1234567890"
+},
+"gst_details": {
+"gst_number": ""
+,
+"cgst": ""
+,
+"igst": ""
+,
+"sgst": ""
+,
+"hsn_number": ""
+,
+"ewaybill_number": ""
+}
+}
+Response:
+{
+"data": {
+"success": true,
+"error": false,
+"response": {
+"airwaybilno": "460001950307",
+"courier": "Ecom Express",
+"courier_alias": "Ecom Express",
+"dispatch_label": "https://appapi.shipdelight.com/label?airwaybilno=NDYwMDAxOTUwMzA3&tenant_id=63773
+0c5d0f60f80d50631b3",
+"message": "Airwaybilno Generated Successfully",
+"routing_code": ""
+,
+"edd": ""
+}
+}
+}

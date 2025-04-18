@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { ChevronDown, ChevronUp, Plus } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface AddReturnOrderModalProps {
   isOpen: boolean;
@@ -241,10 +242,47 @@ export default function AddReturnOrderModal({
   };
 
   // Handle form submission
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     console.log('Form submitted:', formData);
-    // Add your form submission logic here
-    onClose();
+    
+    try {
+      // Show loading toast
+      const loadingToast = toast.loading('Creating reverse pickup...');
+      
+      // Call the API to create reverse pickup
+      const response = await fetch('/api/shipdelight/reverse-pickup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      });
+      
+      const result = await response.json();
+      
+      // Dismiss loading toast
+      toast.dismiss(loadingToast);
+      
+      if (result.success) {
+        // Show success toast
+        toast.success('Reverse pickup created successfully!', {
+          description: `AWB: ${result.data?.data?.response?.airwaybilno || 'Pending approval'}`
+        });
+        
+        // Close the modal
+        onClose();
+      } else {
+        // Show error toast
+        toast.error('Failed to create reverse pickup', {
+          description: result.error || 'Please try again later'
+        });
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      toast.error('An error occurred', {
+        description: 'Please check your connection and try again'
+      });
+    }
   };
 
   return (

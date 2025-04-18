@@ -16,74 +16,74 @@ This document outlines the implementation plan for integrating the Shipdelight A
 
 ### Frontend Implementation
 - [ ] Update AddReturnOrderModal to include all required Shipdelight API fields
-- [ ] Add automatic volumetric weight calculation (l × b × h / 5000)
-- [ ] Add Pincode-based City/State lookup for pickup and delivery addresses
-- [ ] Create user feedback mechanism (toast notifications)
-- [ ] Connect form submission to backend API endpoint
+- [x] Add automatic volumetric weight calculation (l × b × h / 5000)
+- [x] Add Pincode-based City/State lookup for pickup and delivery addresses
+- [x] Create user feedback mechanism (toast notifications)
+- [x] Connect form submission to backend API endpoint
 - [ ] Add validation for all required fields per Shipdelight API requirements
 
 ### Backend API Implementation
-- [ ] Create token management service
-  - [ ] Implement token generation via Shipdelight API
-  - [ ] Add token storage mechanism
-  - [ ] Add token refresh logic (for 24h expiration)
-- [ ] Create reverse pickup endpoint
-  - [ ] Accept form data from frontend
-  - [ ] Transform data to Shipdelight API format
-  - [ ] Set QC to "y" for all orders
-  - [ ] Set auto_approve to "false" (for manual review)
-  - [ ] Make authenticated request to Shipdelight booking API
-  - [ ] Handle response and errors
-  - [ ] Return appropriate response to frontend
+- [x] Create token management service
+  - [x] Implement token generation via Shipdelight API
+  - [x] Add token storage mechanism
+  - [x] Add token refresh logic (for 24h expiration)
+- [x] Create reverse pickup endpoint
+  - [x] Accept form data from frontend
+  - [x] Transform data to Shipdelight API format
+  - [x] Set QC to "y" for all orders
+  - [x] Set auto_approve to "false" (for manual review)
+  - [x] Make authenticated request to Shipdelight booking API
+  - [x] Handle response and errors
+  - [x] Return appropriate response to frontend
 
 ### Data Mapping
-- [ ] Map Order Details → Basic API parameters
-  - [ ] Return Order No. → order_number
-  - [ ] Invoice Value → invoice_total
-  - [ ] Weight → actual_weight
-  - [ ] Dimensions → length, breadth, height
-  - [ ] Volumetric Weight → volumetric_weight
-  - [ ] Pay Type → payment_method (PPD/COD)
-- [ ] Map Item Details → line_items array
-  - [ ] Item Description → name
-  - [ ] SKU → sku
-  - [ ] Quantity → quantity
-  - [ ] Unit Price → unit_price
-  - [ ] Item Weight → actual_weight
-  - [ ] Return Reason → return_reasons
-- [ ] Map Pickup Details → pickup object
-  - [ ] Customer Name → vendor_name
-  - [ ] Contact Number → phone
-  - [ ] Address → address_1, address_2
-  - [ ] City → city
-  - [ ] State → state
-  - [ ] Pincode → postcode
-- [ ] Map Delivery Details → shipping object
-  - [ ] Vendor Name → first_name
-  - [ ] Contact Number → phone
-  - [ ] Address → address_1, address_2
-  - [ ] City → city
-  - [ ] State → state
-  - [ ] Pincode → postcode
-- [ ] Map GST Details → gst_details object (if invoice ≥ 50,000 INR)
-  - [ ] GST Number → gst_number
-  - [ ] CGST% → cgst
-  - [ ] SGST% → sgst
-  - [ ] IGST% → igst
-  - [ ] HSN Number → hsn_number
-  - [ ] E-way Bill Number → ewaybill_number
+- [x] Map Order Details → Basic API parameters
+  - [x] Return Order No. → order_number
+  - [x] Invoice Value → invoice_total
+  - [x] Weight → actual_weight
+  - [x] Dimensions → length, breadth, height
+  - [x] Volumetric Weight → volumetric_weight
+  - [x] Pay Type → payment_method (PPD/COD)
+- [x] Map Item Details → line_items array
+  - [x] Item Description → name
+  - [x] SKU → sku
+  - [x] Quantity → quantity
+  - [x] Unit Price → unit_price
+  - [x] Item Weight → actual_weight
+  - [x] Return Reason → return_reasons
+- [x] Map Pickup Details → pickup object
+  - [x] Customer Name → vendor_name
+  - [x] Contact Number → phone
+  - [x] Address → address_1, address_2
+  - [x] City → city
+  - [x] State → state
+  - [x] Pincode → postcode
+- [x] Map Delivery Details → shipping object
+  - [x] Vendor Name → first_name
+  - [x] Contact Number → phone
+  - [x] Address → address_1, address_2
+  - [x] City → city
+  - [x] State → state
+  - [x] Pincode → postcode
+- [x] Map GST Details → gst_details object (if invoice ≥ 50,000 INR)
+  - [x] GST Number → gst_number
+  - [x] CGST% → cgst
+  - [x] SGST% → sgst
+  - [x] IGST% → igst
+  - [x] HSN Number → hsn_number
+  - [x] E-way Bill Number → ewaybill_number
 
 ### Testing
 - [ ] Test token generation and refreshing
 - [ ] Test reverse pickup creation with QC
 - [ ] Test error handling and user feedback
-- [ ] Test auto-calculation of volumetric weight
-- [ ] Test Pincode-based City/State lookup
+- [x] Test auto-calculation of volumetric weight
+- [x] Test Pincode-based City/State lookup
 - [ ] Verify all data is correctly mapped to Shipdelight API format
 
 ### Documentation
-- [ ] Document API endpoints
-- [ ] Document token management strategy
+- [x] Document API endpoints
+- [x] Document token management strategy
 - [ ] Create user guide for the Return Order form
 
 ## Technical Considerations

@@ -247,4 +247,52 @@ export async function trackOrderByAwb(awbNumber: string): Promise<any> {
     console.error('Error tracking order:', error);
     throw error;
   }
+}
+
+/**
+ * Query the tracking API directly with a specific payload
+ * @param payload The request payload
+ * @returns Promise with the tracking response
+ */
+export async function queryTrackingApi(payload: any = {}): Promise<any> {
+  try {
+    // Get a valid token
+    const token = await getValidToken();
+    
+    // Log the token and payload for debugging
+    console.log('Using token (first 10 chars):', token.accessToken.substring(0, 10) + '...');
+    console.log('Tracking API request payload:', JSON.stringify(payload));
+    
+    // Make the API request
+    const response = await fetch('https://appapi.shipdelight.com/tracking', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token.accessToken}`
+      },
+      body: JSON.stringify(payload)
+    });
+    
+    // Log the response status
+    console.log(`Tracking API response status: ${response.status} ${response.statusText}`);
+    
+    // Get the response text
+    const responseText = await response.text();
+    console.log(`Raw response: ${responseText.substring(0, 200)}${responseText.length > 200 ? '...' : ''}`);
+    
+    // Try to parse as JSON
+    try {
+      return JSON.parse(responseText);
+    } catch (parseError) {
+      console.error('Failed to parse tracking API response as JSON:', parseError);
+      return {
+        success: false,
+        error: 'Failed to parse API response',
+        rawResponse: responseText
+      };
+    }
+  } catch (error) {
+    console.error('Error querying tracking API:', error);
+    throw error;
+  }
 } 

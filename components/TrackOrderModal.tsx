@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -18,16 +18,32 @@ import { CheckCircle, XCircle, Clock, Truck, AlertCircle, Package, RotateCcw, Ar
 interface TrackOrderModalProps {
   isOpen: boolean;
   onClose: () => void;
+  initialAwb?: string;
 }
 
 export default function TrackOrderModal({
   isOpen,
-  onClose
+  onClose,
+  initialAwb = ''
 }: TrackOrderModalProps) {
   const [awbNumber, setAwbNumber] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [trackingData, setTrackingData] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
+
+  // Set the initial AWB when the component mounts or when initialAwb changes
+  useEffect(() => {
+    if (initialAwb) {
+      setAwbNumber(initialAwb);
+    }
+  }, [initialAwb]);
+
+  // Auto-track when initial AWB is provided and modal is opened
+  useEffect(() => {
+    if (isOpen && initialAwb && !trackingData && !isLoading) {
+      handleTrack();
+    }
+  }, [isOpen, initialAwb]);
 
   const handleTrack = async () => {
     if (!awbNumber.trim()) {
@@ -108,6 +124,9 @@ export default function TrackOrderModal({
           <DialogTitle className="text-xl">
             Track Order
           </DialogTitle>
+          <p className="text-sm text-gray-500">
+            Individual order tracking is still available during system maintenance. Enter an AWB number to track a shipment.
+          </p>
         </DialogHeader>
 
         <div className="space-y-6">
@@ -138,9 +157,15 @@ export default function TrackOrderModal({
           </div>
 
           {error && (
-            <div className="p-4 border rounded-md bg-red-50 text-red-700 flex items-center gap-2">
-              <AlertCircle className="h-5 w-5" />
-              <span>{error}</span>
+            <div className="p-4 border rounded-md bg-red-50 text-red-700 flex items-start gap-2">
+              <AlertCircle className="h-5 w-5 mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="font-medium">{error}</p>
+                <p className="text-sm mt-1">
+                  Make sure you've entered a valid AWB number. If you don't have an AWB number,
+                  try viewing your original order email or contact customer support.
+                </p>
+              </div>
             </div>
           )}
 

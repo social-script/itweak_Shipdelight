@@ -16,7 +16,8 @@ import {
   Upload, 
   Search, 
   MoreVertical, 
-  Plus
+  Plus,
+  RotateCcw
 } from 'lucide-react';
 
 export default function Orders() {
@@ -31,10 +32,16 @@ export default function Orders() {
 
   // Track Order modal state
   const [isTrackModalOpen, setIsTrackModalOpen] = useState(false);
+  const [trackingAwb, setTrackingAwb] = useState('');
 
   const openOrderDetails = (order: any) => {
     setSelectedOrder(order);
     setIsOrderModalOpen(true);
+  };
+
+  const openTrackOrder = (awb: string) => {
+    setTrackingAwb(awb);
+    setIsTrackModalOpen(true);
   };
 
   // Mock data for returns
@@ -117,9 +124,9 @@ export default function Orders() {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
           <div className="flex items-center gap-2">
             <div className="bg-gray-200 w-8 h-8 rounded-md flex items-center justify-center text-slate-700">
-              📦
+              <RotateCcw className="h-4 w-4 text-purple-600" />
             </div>
-            <h1 className="text-xl font-semibold">Orders</h1>
+            <h1 className="text-xl font-semibold">Return Orders</h1>
           </div>
           <div className="flex flex-wrap gap-3">
             <Button 
@@ -182,7 +189,11 @@ export default function Orders() {
               >
                 {/* Mobile view */}
                 <div className="md:hidden col-span-1 sm:col-span-2 space-y-2">
-                  <div>
+                  <div className="flex items-center gap-2">
+                    <span className="bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full text-xs flex items-center">
+                      <RotateCcw className="h-3 w-3 mr-1" />
+                      Return
+                    </span>
                     <span className="font-medium">{returnItem.company}</span> • <span className="text-gray-500">{returnItem.timeAgo}</span>
                   </div>
                   <div>
@@ -213,8 +224,7 @@ export default function Orders() {
                       className="flex items-center gap-1"
                       onClick={(e) => {
                         e.stopPropagation();
-                        setSelectedOrder(returnItem);
-                        setIsTrackModalOpen(true);
+                        openTrackOrder(returnItem.awb);
                       }}
                     >
                       <Search className="h-4 w-4" /> Track
@@ -224,6 +234,12 @@ export default function Orders() {
 
                 {/* Desktop view */}
                 <div className="hidden md:block">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full text-xs flex items-center">
+                      <RotateCcw className="h-3 w-3 mr-1" />
+                      Return
+                    </span>
+                  </div>
                   <div className="font-medium">{returnItem.company} | {returnItem.companyId}</div>
                   <div>{returnItem.user}</div>
                   <div className="text-gray-500 text-xs mt-1">{returnItem.timeAgo}</div>
@@ -259,8 +275,7 @@ export default function Orders() {
                     className="flex items-center gap-1 w-full justify-center"
                     onClick={(e) => {
                       e.stopPropagation();
-                      setSelectedOrder(returnItem);
-                      setIsTrackModalOpen(true);
+                      openTrackOrder(returnItem.awb);
                     }}
                   >
                     <Search className="h-4 w-4" /> Track

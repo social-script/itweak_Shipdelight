@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from 'sonner';
-import { CheckCircle, XCircle, Clock, Truck, AlertCircle, Package } from 'lucide-react';
+import { CheckCircle, XCircle, Clock, Truck, AlertCircle, Package, RotateCcw, ArrowLeftRight } from 'lucide-react';
 
 interface TrackOrderModalProps {
   isOpen: boolean;
@@ -70,13 +70,35 @@ export default function TrackOrderModal({
   };
 
   // Helper function to get status icon
-  const getStatusIcon = (status: string) => {
+  const getStatusIcon = (status: string, orderType: string = '') => {
     status = status.toUpperCase();
+    const isReturn = orderType.toUpperCase() === 'REVERSE' || status.includes('REVERSE');
+    
     if (status.includes('DELIVERED')) return <CheckCircle className="text-green-500" />;
-    if (status.includes('FAILED') || status.includes('UNDELIVERED')) return <XCircle className="text-red-500" />;
+    if (status.includes('FAILED') || status.includes('UNDELIVERED') || status.includes('REJECTED')) return <XCircle className="text-red-500" />;
     if (status.includes('PENDING')) return <Clock className="text-orange-500" />;
-    if (status.includes('TRANSIT') || status.includes('PICKUP DONE')) return <Truck className="text-blue-500" />;
+    if (status.includes('TRANSIT') || status.includes('PICKUP DONE')) {
+      return isReturn ? <RotateCcw className="text-purple-500" /> : <Truck className="text-blue-500" />;
+    }
+    if (status.includes('REVERSE')) return <ArrowLeftRight className="text-purple-500" />;
     return <Package className="text-gray-500" />;
+  };
+
+  // Helper function to determine if the status is related to return
+  const isReturnStatus = (statusCode: string) => {
+    return statusCode.startsWith('R') || statusCode === 'Return-Exchange';
+  };
+
+  // Helper function to get status color
+  const getStatusColor = (status: string, orderType: string = '') => {
+    status = status.toUpperCase();
+    const isReturn = orderType.toUpperCase() === 'REVERSE' || status.includes('REVERSE');
+    
+    if (status.includes('DELIVERED')) return 'bg-green-50 text-green-700 border-green-200';
+    if (status.includes('FAILED') || status.includes('UNDELIVERED') || status.includes('REJECTED')) return 'bg-red-50 text-red-700 border-red-200';
+    if (status.includes('PENDING')) return 'bg-orange-50 text-orange-700 border-orange-200';
+    if (isReturn) return 'bg-purple-50 text-purple-700 border-purple-200';
+    return 'bg-blue-50 text-blue-700 border-blue-200';
   };
 
   return (
@@ -135,12 +157,23 @@ export default function TrackOrderModal({
                 </div>
                 <div>
                   <span className="text-sm text-gray-500">Order Type:</span>
-                  <div className="font-medium">{trackingData.tracking[0].ordertype}</div>
+                  <div className={`font-medium flex items-center gap-1 ${
+                    trackingData.tracking[0].ordertype === 'REVERSE' ? 'text-purple-700' : 'text-blue-700'
+                  }`}>
+                    {trackingData.tracking[0].ordertype === 'REVERSE' ? (
+                      <ArrowLeftRight className="h-4 w-4" />
+                    ) : (
+                      <Truck className="h-4 w-4" />
+                    )}
+                    {trackingData.tracking[0].ordertype}
+                  </div>
                 </div>
                 <div>
                   <span className="text-sm text-gray-500">Status:</span>
-                  <div className="font-medium flex items-center gap-1">
-                    {getStatusIcon(trackingData.tracking[0].latest_status)}
+                  <div className={`font-medium flex items-center gap-1 px-2 py-1 rounded-md inline-block ${
+                    getStatusColor(trackingData.tracking[0].latest_status, trackingData.tracking[0].ordertype)
+                  }`}>
+                    {getStatusIcon(trackingData.tracking[0].latest_status, trackingData.tracking[0].ordertype)}
                     {trackingData.tracking[0].latest_status}
                   </div>
                 </div>
@@ -167,11 +200,18 @@ export default function TrackOrderModal({
                       </thead>
                       <tbody className="bg-white divide-y divide-gray-200">
                         {trackingData.tracking[0].tracking_history.map((history: any, index: number) => (
-                          <tr key={index}>
+                          <tr key={index} className={
+                            history.status_code && isReturnStatus(history.status_code) ? 'bg-purple-50' : ''
+                          }>
                             <td className="px-4 py-2 whitespace-nowrap text-sm">
                               <div className="flex items-center gap-1">
-                                {getStatusIcon(history.status)}
-                                {history.status}
+                                {getStatusIcon(history.status, trackingData.tracking[0].ordertype)}
+                                <span className={history.status_code && isReturnStatus(history.status_code) ? 'text-purple-700' : ''}>
+                                  {history.status}
+                                  {history.status_code && (
+                                    <span className="text-xs ml-1 text-gray-500">({history.status_code})</span>
+                                  )}
+                                </span>
                               </div>
                             </td>
                             <td className="px-4 py-2 whitespace-nowrap text-sm">{history.location}</td>

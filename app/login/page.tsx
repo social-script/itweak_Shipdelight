@@ -25,9 +25,9 @@ export default function LoginPage() {
       <main className="flex-1 container mx-auto px-4 py-12 md:py-24">
         <div className="max-w-md mx-auto space-y-8">
           <div className="text-center">
-            <h1 className="text-3xl font-bold">Sign In</h1>
+            <h1 className="text-3xl font-bold">itweak Sales</h1>
             <p className="text-gray-500 mt-2">
-              Sign in to access protected areas of the application
+              Sign in with your email and password
             </p>
           </div>
           
@@ -35,13 +35,17 @@ export default function LoginPage() {
           
           {searchParams.has('from') && (
             <div className="bg-blue-50 text-blue-700 p-4 rounded-md text-center text-sm">
-              You need to be logged in to access this page.
+              Authentication required to access this page.
               <br />
               You'll be redirected after signing in.
             </div>
           )}
         </div>
       </main>
+      
+      <footer className="py-6 text-center text-gray-500 text-sm">
+        <p>&copy; {new Date().getFullYear()} itweak Sales. All rights reserved.</p>
+      </footer>
     </div>
   );
 } 

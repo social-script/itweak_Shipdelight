@@ -14,31 +14,30 @@ export default function UserProfile() {
   }
 
   return (
-    <Card className="w-full max-w-md mx-auto">
-      <CardHeader className="flex flex-col items-center">
-        <Avatar className="h-24 w-24 mb-4">
+    <Card className="w-full max-w-md mx-auto shadow-md hover:shadow-lg transition-shadow border-purple-100 dark:border-purple-900/30">
+      <CardHeader className="flex flex-col items-center bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-t-lg pb-6">
+        <Avatar className="h-24 w-24 mb-4 ring-4 ring-white dark:ring-slate-800 shadow-md">
           <AvatarImage src={user.photoURL || undefined} alt={user.displayName || 'User'} />
-          <AvatarFallback className="text-2xl">{user.displayName?.[0] || 'U'}</AvatarFallback>
+          <AvatarFallback className="bg-gradient-to-br from-purple-600 to-pink-500 text-white text-2xl">{user.displayName?.[0] || 'U'}</AvatarFallback>
         </Avatar>
-        <CardTitle>{user.displayName}</CardTitle>
+        <CardTitle className="text-xl bg-gradient-to-r from-purple-600 to-pink-500 text-transparent bg-clip-text">{user.displayName}</CardTitle>
         <CardDescription>{user.email}</CardDescription>
       </CardHeader>
-      <CardContent>
-        <div className="space-y-2">
-          <div className="text-sm">
-            <span className="font-semibold">User ID: </span>
-            <span className="text-muted-foreground">{user.uid}</span>
-          </div>
-          <div className="text-sm">
-            <span className="font-semibold">Email verified: </span>
-            <span className="text-muted-foreground">{user.emailVerified ? 'Yes' : 'No'}</span>
-          </div>
+      <CardContent className="space-y-2 pt-6">
+        <div className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-2">
+          <span className="font-semibold text-purple-700 dark:text-purple-300">User ID:</span>
+          <span className="text-muted-foreground truncate">{user.uid}</span>
+          
+          <span className="font-semibold text-purple-700 dark:text-purple-300">Email verified:</span>
+          <span className={`${user.emailVerified ? 'text-green-600 dark:text-green-400' : 'text-amber-600 dark:text-amber-400'}`}>
+            {user.emailVerified ? 'Yes' : 'No'}
+          </span>
         </div>
       </CardContent>
       <CardFooter>
         <Button 
           variant="outline" 
-          className="w-full" 
+          className="w-full border-purple-200 text-purple-700 hover:bg-purple-50 hover:text-purple-800 dark:border-purple-800 dark:text-purple-300 dark:hover:bg-purple-950 dark:hover:text-purple-200" 
           onClick={logout}
         >
           <LogOut className="h-4 w-4 mr-2" />

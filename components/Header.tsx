@@ -34,10 +34,10 @@ export default function Header() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur">
+    <header className="sticky top-0 z-50 w-full border-b border-purple-100 dark:border-purple-900/30 bg-white/80 dark:bg-slate-900/80 backdrop-blur">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex h-16 items-center justify-between">
         <div>
-          <Link href="/" className="text-xl font-bold">
+          <Link href="/" className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-500 text-transparent bg-clip-text">
             Itweak SD
           </Link>
         </div>
@@ -50,8 +50,8 @@ export default function Header() {
                     href={link.href}
                     className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
                       isActive(link.href)
-                        ? 'bg-muted'
-                        : 'hover:bg-muted/50'
+                        ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/40 dark:text-purple-200'
+                        : 'hover:bg-purple-50 dark:hover:bg-purple-900/20'
                     }`}
                   >
                     {link.icon}

@@ -1,0 +1,239 @@
+2. Tracking API
+URL: https://appapi.shipdelight.com/tracking
+Authorization: Type – Bearer Token
+Request Body:
+{
+"filter_type": "airwaybilno",
+"filter_value": "20043294783"
+}
+Response Body:
+{
+"success": true,
+"error": false,
+"tracking": [
+{
+"airwaybilno": "200432",
+"orderno": "#19758048",
+"ordertype": "FORWARD",
+"latest_status_code": "501",
+"latest_status": "Undelivered",
+"exp_delivery": "2023-12-05",
+"tracking_history": [
+{
+"status": "PENDING PICKUP",
+"status_code": "99",
+"lsp_status": "Booked",
+"location": "MANESAR",
+},
+{
+},
+{
+},
+{
+},
+{
+},
+{
+},
+{
+},
+{
+"remarks": "Booked",
+"updated_at": "2023-12-02 17:13:08"
+"status": "PICKUP DONE",
+"status_code": "100",
+"lsp_status": "Accepted",
+"location": "MANESAR",
+"remarks": "Accepted",
+"updated_at": "2023-12-02 18:08:54"
+"status": "IN-TRANSIT",
+"status_code": "200",
+"lsp_status": "Departed",
+"location": "MANESAR",
+"remarks": "Departed",
+"updated_at": "2023-12-02 22:40:57"
+"status": "IN-TRANSIT",
+"status_code": "201",
+"lsp_status": "Arrived",
+"location": "DELH",
+"remarks": "Arrived",
+"updated_at": "2023-12-03 01:34:07"
+"status": "IN-TRANSIT",
+"status_code": "200",
+"lsp_status": "Departed",
+"location": "DELH",
+"remarks": "Departed",
+"updated_at": "2023-12-03 07:15:31"
+"status": "IN-TRANSIT",
+"status_code": "201",
+"lsp_status": "Arrived",
+"location": "NOIDA",
+"remarks": "Arrived",
+"updated_at": "2023-12-03 09:38:24"
+"status": "IN-TRANSIT",
+"status_code": "301",
+"lsp_status": "Reached at DC",
+"location": "NOIDA",
+"remarks": "Reached at DC",
+"updated_at": "2023-12-03 09:38:24"
+"status": "IN-TRANSIT",
+"status_code": "201",
+"lsp_status": "Arrived",
+"location": "NOIDA",
+"remarks": "Arrived",
+]
+}
+]
+}
+Status Events
+Status
+Code 99 100 102 105 200 201 204 211 301 305 312 400 401 500 501 502 503 504 505 },
+{
+},
+{
+},
+{
+}
+"updated_at": "2023-12-04 09:07:11"
+"status": "IN-TRANSIT",
+"status_code": "301",
+"lsp_status": "Reached at DC",
+"location": "NOIDA",
+"remarks": "Reached at DC",
+"updated_at": "2023-12-04 09:07:11"
+"status": "OUT FOR DELIVERY",
+"status_code": "305",
+"lsp_status": "Out for Delivery",
+"location": "NOIDA",
+"remarks": "Out for Delivery",
+"updated_at": "2023-12-04 09:11:36"
+"status": "UNDELIVERED",
+"status_code": "501",
+"lsp_status": "Delivery Attempt",
+"location": "NIDA",
+"remarks": "incomplete address"
+,
+"updated_at": "2023-12-04 17:20:20"
+Status PENDING PICKUP PICKUP DONE IN-TRANSIT IN-TRANSIT IN-TRANSIT IN-TRANSIT IN-TRANSIT IN-TRANSIT IN-TRANSIT OUT FOR DELIVERY IN-TRANSIT DELIVERED RTO DELIVERED UNDELIVERED UNDELIVERED UNDELIVERED UNDELIVERED UNDELIVERED UNDELIVERED Status Remarks pending_pickup pickup_done processing at origin hub ready to dispatch from origin left from origin in-transit network delay misroute arrival at destination branch out for delivery Maximum Attempts done delivered rto delivered consignee refused incomplete address oda consignee shifted DAMAGED no such consignee Status Type
+Forward
+Forward
+Forward
+Forward
+Forward
+Forward
+Forward
+Forward
+Forward
+Forward
+Forward
+Forward
+RTO
+Forward
+Forward
+Forward
+Forward
+Forward
+Forward
+506 UNDELIVERED future delivery 507 UNDELIVERED cod not ready 508 UNDELIVERED residence/office closed 509 UNDELIVERED out of station 510 UNDELIVERED shipment lost 511 UNDELIVERED Dangerous Goods 513 UNDELIVERED Self Collect 514 UNDELIVERED Held With Govt Authority 515 UNDELIVERED consignee not available 516 UNDELIVERED consignee not responding 517 UNDELIVERED misroute 518 UNDELIVERED on hold 519 UNDELIVERED restricted area 520 UNDELIVERED snatched by consignee 521 UNDELIVERED disturbance/natural disaster/strike/COVID 522 UNDELIVERED Open Delivery 523 UNDELIVERED Customer denied - OTP Delivery 524 UNDELIVERED Time Constraint / Dispute 526 UNDELIVERED OTP Not Received by Consignee 600 RTO INITIATED rto initiated 601 RTO IN-TRANSIT rto intransit 615 RTO UNDELIVERED Vendor refused 616 RTO UNDELIVERED Vendor Office closed 617 RTO UNDELIVERED Vendor address changed 618 RTO UNDELIVERED Damaged 620 RTO OUT FOR DELIVERY rto out for delivery 621 RTO UNDELIVERED RTO Undelivered 636 RTO UNDELIVERED Packet Open 641 RTO UNDELIVERED RTO undelivered-Vendor not available 642 RTO UNDELIVERED RTO undelivered-Vendor Location Not serviceable 643 RTO UNDELIVERED RTO undelivered-Vendor address changed 644 RTO UNDELIVERED RTO undelivered- Data Incorrect 900 PICKUP CANCELLED Pickup Cancelled by Client 901 LOST SHIPMENT LOST 902 SHIPMENT DAMAGE SHIPMENT DAMAGE 951 REATTEMPT Reattempt 1001 UNATTEMPTED Unattempted I002 CL-REATTEMPT Client Reattempt I003 CL-RTO-INITIATED cl rto initiated I005 CL-SELFCOLLECT Client Self Collect R001 REVERSE PICKUP PENDING reverse pickup data shared R002 REVERSE PICKUP PENDING reverse pickup token generated R003 REVERSE PICKUP PENDING out for reverse pickup R004 REVERSE PICKUP DONE Reverse Pickup Done R011 REVERSE PICKUP PENDING Incomplete Address R085 REVERSE PICKUP PENDING Reverse Initiated R086 REVERSE RECEIVED Reverse Received R087 REVERSE PICKUP PENDING Reverse Approved R088 REVERSE REJECTED Reverse Rejected R100 REVERSE PICKUP DONE Reverse pickup done R1000 REVERSE PICKUP DELIVERED reverse- shipment delivered Forward
+Forward
+Forward
+Forward
+Forward
+Forward
+Forward
+Forward
+Forward
+Forward
+Forward
+Forward
+Forward
+Forward
+Forward
+Forward
+Forward
+Forward
+Forward
+RTO
+RTO
+RTO
+RTO
+RTO
+RTO
+RTO
+RTO
+RTO
+RTO
+RTO
+RTO
+RTO
+Forward
+Forward
+Forward
+NDR
+Forward
+NDR
+NDR
+NDR
+Return-Exchange
+Return-Exchange
+Return-Exchange
+Return-Exchange
+Return-Exchange
+Return-Exchange
+Return-Exchange
+Return-Exchange
+Return-Exchange
+Return-Exchange
+Return-Exchange
+R101 R102 R103 R104 R106 R107 R109 R1100 R1101 R1102
+R1103 R111 R112 R113 R114 R117 R118 R119 R120 R1200 R1201 R1202 R1203 R1204 R1205 R1206 R1207 R1208 R121 R122 R123 R124 R125 R126 R127 R128 R129 R130 R131 R200 R201 R202 R203 R204 R205 R206 R300 R400 R600 R85 REVERSE PICKUP PENDING Reverse Pickup Rescheduled REVERSE PICKUP FAILED shipment not ready REVERSE PICKUP FAILED pickup cancelled by customer REVERSE PICKUP FAILED pickup location not served REVERSE PICKUP FAILED Customer not available REVERSE PICKUP FAILED pickup attempted late REVERSE PICKUP FAILED packaging not appropriate REVERSE PICKUP RTO INITIATED reverse shipment- rto initiated REVERSE PICKUP RTO INTRANSIT reverse shipment-rto intransit REVERSE PICKUP RTO OUT FOR
+DELIVERY reverse shipment-rto out for delivery REVERSE PICKUP RTO DELIVERED reverse shipment-rto delivered REVERSE PICKUP FAILED Different Product REVERSE PICKUP FAILED pickup done by other courier REVERSE PICKUP FAILED confirmation from shipper awaited REVERSE PICKUP FAILED customer wants the replacement/refund REVERSE PICKUP FAILED customer shifted REVERSE PICKUP FAILED maximum attempt done REVERSE PICKUP FAILED pickup refused by customer REVERSE PICKUP FAILED qc failed REVERSE PICKUP UNDELIVERED vendor refused to accept REVERSE PICKUP UNDELIVERED vendor shifted REVERSE PICKUP UNDELIVERED Reverse shipment undelivered-Vendor Location Closed REVERSE PICKUP UNDELIVERED Reverse shipment undelivered-Vendor not available REVERSE PICKUP UNDELIVERED Reverse shipment undelivered-Vendor address changed REVERSE PICKUP UNDELIVERED Reverse shipment undelivered-Vendor Location Not serviceable REVERSE PICKUP UNDELIVERED Reverse shipment undelivered-Shipment Misroute REVERSE PICKUP UNDELIVERED on hold REVERSE PICKUP UNDELIVERED vendor not available REVERSE PICKUP FAILED pickup cancelled due to over size product REVERSE PICKUP FAILED On Hold REVERSE PICKUP FAILED Address unlocatable REVERSE PICKUP FAILED Partial Product REVERSE PICKUP FAILED Entry Restricted REVERSE PICKUP FAILED Color Mismatch REVERSE PICKUP FAILED Weight mismatch at pickup REVERSE PICKUP FAILED Failed KYC -OTP not available REVERSE PICKUP FAILED Pickup not attempted REVERSE PICKUP FAILED Brand Mismatch REVERSE PICKUP FAILED Size Mismatch REVERSE PICKUP IN-TRANSIT processing at origin hub REVERSE PICKUP IN-TRANSIT ready to dispatch from origin REVERSE PICKUP IN-TRANSIT left from origin REVERSE PICKUP IN-TRANSIT in-transit REVERSE PICKUP IN-TRANSIT network delay REVERSE PICKUP IN-TRANSIT misroute REVERSE PICKUP IN-TRANSIT arrival at destination REVERSE PICKUP OUT FOR DELIVERY reverse shipment-out for delivery REVERSE PICKUP LOST lost REVERSE PICKUP DAMAGE shipment damage REVERSE PICKUP PENDING Reverse ready for pickup Return-Exchange
+Return-Exchange
+Return-Exchange
+Return-Exchange
+Return-Exchange
+Return-Exchange
+Return-Exchange
+Return-Exchange
+Return-Exchange
+Return-Exchange
+Return-Exchange
+Return-Exchange
+Return-Exchange
+Return-Exchange
+Return-Exchange
+Return-Exchange
+Return-Exchange
+Return-Exchange
+Return-Exchange
+Return-Exchange
+Return-Exchange
+Return-Exchange
+Return-Exchange
+Return-Exchange
+Return-Exchange
+Return-Exchange
+Return-Exchange
+Return-Exchange
+Return-Exchange
+Return-Exchange
+Return-Exchange
+Return-Exchange
+Return-Exchange
+Return-Exchange
+Return-Exchange
+Return-Exchange
+Return-Exchange
+Return-Exchange
+Return-Exchange
+Return-Exchange
+Return-Exchange
+Return-Exchange
+Return-Exchange
+Return-Exchange
+Return-Exchange
+Return-Exchange
+Return-Exchange
+Return-Exchange
+Return-Exchange
+Return-Exchange

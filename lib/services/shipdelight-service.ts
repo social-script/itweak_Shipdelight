@@ -95,6 +95,14 @@ export async function createReversePickup(formData: any): Promise<any> {
     // Get a valid token
     const token = await getValidToken();
     
+    // Convert payment type to acceptable format (PPD or COD)
+    let paymentMethod = "PPD";
+    if (formData.payType === "Prepaid") {
+      paymentMethod = "PPD";
+    } else if (formData.payType === "COD") {
+      paymentMethod = "COD";
+    }
+    
     // Prepare the request payload
     const payload = {
       auto_approve: "false", // Manual review
@@ -102,11 +110,11 @@ export async function createReversePickup(formData: any): Promise<any> {
       service_type: "r", // Reverse
       invoice_number: formData.returnOrderNo,
       transaction_ref_no: formData.transactionId || formData.returnOrderNo,
-      payment_method: formData.payType.toUpperCase(), // PPD or COD
+      payment_method: paymentMethod, // PPD or COD
       discount_total: "0.00",
       cod_shipping_charge: "0.00",
       invoice_total: formData.invoiceValue,
-      cod_total: formData.payType.toUpperCase() === "COD" ? formData.invoiceValue : "0.0",
+      cod_total: paymentMethod === "COD" ? formData.invoiceValue : "0.0",
       length: formData.length,
       breadth: formData.breadth,
       height: formData.height,
@@ -175,6 +183,9 @@ export async function createReversePickup(formData: any): Promise<any> {
       }
     };
     
+    // Log the request payload for debugging
+    console.log('Shipdelight Request Payload:', JSON.stringify(payload, null, 2));
+    
     // Make the API request
     const response = await fetch(BOOKING_ENDPOINT, {
       method: 'POST',
@@ -185,13 +196,55 @@ export async function createReversePickup(formData: any): Promise<any> {
       body: JSON.stringify(payload)
     });
     
+    const responseData = await response.json();
+    
+    // Log the response for debugging
+    console.log('Shipdelight Response:', JSON.stringify(responseData, null, 2));
+    
     if (!response.ok) {
       throw new Error(`Failed to create reverse pickup: ${response.status} ${response.statusText}`);
     }
     
-    return await response.json();
+    return responseData;
   } catch (error) {
     console.error('Error creating reverse pickup:', error);
+    throw error;
+  }
+}
+
+/**
+ * Track an order by airway bill number
+ * @param awbNumber The airway bill number to track
+ * @returns Promise with the tracking details
+ */
+export async function trackOrderByAwb(awbNumber: string): Promise<any> {
+  try {
+    // Get a valid token
+    const token = await getValidToken();
+    
+    // Prepare the tracking request payload
+    const payload = {
+      filter_type: "airwaybilno",
+      filter_value: awbNumber
+    };
+    
+    // Make the API request
+    const response = await fetch('https://appapi.shipdelight.com/tracking', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token.accessToken}`
+      },
+      body: JSON.stringify(payload)
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Failed to track order: ${response.status} ${response.statusText}`);
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Error tracking order:', error);
     throw error;
   }
 } 

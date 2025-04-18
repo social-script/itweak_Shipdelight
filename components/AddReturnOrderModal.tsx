@@ -34,7 +34,7 @@ export default function AddReturnOrderModal({
   // State for accordion sections
   const [openSections, setOpenSections] = useState({
     orderDetails: true,
-    itemDetails: false,
+    itemDetails: true,
     pickupDetails: false,
     deliveryDetails: false,
     gstDetails: false
@@ -241,9 +241,281 @@ export default function AddReturnOrderModal({
     }));
   };
 
+  // List of required fields
+  const requiredFields = [
+    // Order Details
+    'returnOrderNo', 
+    'invoiceValue', 
+    'weight', 
+    'length', 
+    'breadth', 
+    'height',
+    // Item Details
+    'itemDescription',
+    'quantity',
+    'unitPrice',
+    // Pickup Details
+    'customerName',
+    'pickupContactNumber',
+    'pickupPincode',
+    'pickupAddressLine1',
+    'pickupCity',
+    'pickupState',
+    // Delivery Details
+    'deliveryContactNumber',
+    'deliveryPincode',
+    'deliveryAddressLine1',
+    'deliveryCity',
+    'deliveryState'
+  ];
+
+  // Numeric fields that need to be validated as valid numbers
+  const numericFields = [
+    'invoiceValue', 
+    'weight', 
+    'volumetricWeight', 
+    'length', 
+    'breadth', 
+    'height',
+    'quantity',
+    'unitPrice',
+    'pickupContactNumber',
+    'pickupPincode',
+    'deliveryContactNumber',
+    'deliveryPincode'
+  ];
+
+  // Phone fields that need to be 10 digits
+  const phoneFields = [
+    'pickupContactNumber',
+    'deliveryContactNumber'
+  ];
+
+  // Pincode fields that need to be 6 digits
+  const pincodeFields = [
+    'pickupPincode',
+    'deliveryPincode'
+  ];
+
+  // Field labels for error messages
+  const fieldLabels: Record<string, string> = {
+    returnOrderNo: 'Return Order No.',
+    invoiceValue: 'Invoice Value',
+    weight: 'Weight',
+    length: 'Length',
+    breadth: 'Breadth',
+    height: 'Height',
+    itemDescription: 'Item Description',
+    quantity: 'Quantity',
+    unitPrice: 'Unit Price',
+    customerName: 'Customer Name',
+    pickupContactNumber: 'Pickup Contact Number',
+    pickupPincode: 'Pickup Pincode',
+    pickupAddressLine1: 'Pickup Address Line 1',
+    pickupCity: 'Pickup City',
+    pickupState: 'Pickup State',
+    deliveryContactNumber: 'Delivery Contact Number',
+    deliveryPincode: 'Delivery Pincode',
+    deliveryAddressLine1: 'Delivery Address Line 1',
+    deliveryCity: 'Delivery City',
+    deliveryState: 'Delivery State',
+    volumetricWeight: 'Volumetric Weight'
+  };
+
   // Handle form submission
   const handleSubmit = async () => {
     console.log('Form submitted:', formData);
+    
+    // Check for required fields
+    const missingFields = requiredFields.filter(field => !formData[field as keyof typeof formData]);
+    
+    if (missingFields.length > 0) {
+      // Get the first missing field to focus on that section
+      const firstMissingField = missingFields[0];
+      
+      // Determine which section to open
+      let sectionToOpen: keyof typeof openSections = 'orderDetails';
+      
+      if (['itemDescription', 'quantity', 'unitPrice'].includes(firstMissingField)) {
+        sectionToOpen = 'itemDetails';
+      } else if (['customerName', 'pickupContactNumber', 'pickupPincode', 'pickupAddressLine1', 'pickupCity', 'pickupState'].includes(firstMissingField)) {
+        sectionToOpen = 'pickupDetails';
+      } else if (['deliveryContactNumber', 'deliveryPincode', 'deliveryAddressLine1', 'deliveryCity', 'deliveryState'].includes(firstMissingField)) {
+        sectionToOpen = 'deliveryDetails';
+      }
+      
+      // Open the section that contains the first missing field
+      setOpenSections(prev => ({
+        ...prev,
+        [sectionToOpen]: true
+      }));
+      
+      // Show error toast with missing fields
+      let errorMessage = 'Please fill in the following required fields:';
+      missingFields.forEach(field => {
+        errorMessage += `\n• ${fieldLabels[field] || field}`;
+      });
+      
+      toast.error('Missing Required Fields', {
+        description: errorMessage
+      });
+      
+      // Focus on the first missing field if possible
+      setTimeout(() => {
+        const element = document.getElementById(firstMissingField);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          element.focus();
+        }
+      }, 100);
+      
+      return;
+    }
+    
+    // Validate numeric fields
+    const invalidNumericFields = numericFields
+      .filter(field => {
+        const value = formData[field as keyof typeof formData] as string;
+        // Check if field has a value and is not a valid number
+        return value && (isNaN(Number(value)) || Number(value) <= 0);
+      });
+    
+    if (invalidNumericFields.length > 0) {
+      // Get the first invalid field to focus on that section
+      const firstInvalidField = invalidNumericFields[0];
+      
+      // Determine which section to open
+      let sectionToOpen: keyof typeof openSections = 'orderDetails';
+      
+      if (['quantity', 'unitPrice'].includes(firstInvalidField)) {
+        sectionToOpen = 'itemDetails';
+      } else if (['pickupContactNumber', 'pickupPincode'].includes(firstInvalidField)) {
+        sectionToOpen = 'pickupDetails';
+      } else if (['deliveryContactNumber', 'deliveryPincode'].includes(firstInvalidField)) {
+        sectionToOpen = 'deliveryDetails';
+      }
+      
+      // Open the section that contains the first invalid field
+      setOpenSections(prev => ({
+        ...prev,
+        [sectionToOpen]: true
+      }));
+      
+      // Show error toast with invalid fields
+      let errorMessage = 'Please enter valid numbers for the following fields:';
+      invalidNumericFields.forEach(field => {
+        errorMessage += `\n• ${fieldLabels[field] || field}`;
+      });
+      
+      toast.error('Invalid Numeric Fields', {
+        description: errorMessage
+      });
+      
+      // Focus on the first invalid field if possible
+      setTimeout(() => {
+        const element = document.getElementById(firstInvalidField);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          element.focus();
+        }
+      }, 100);
+      
+      return;
+    }
+    
+    // Validate phone numbers (10 digits)
+    const invalidPhoneFields = phoneFields
+      .filter(field => {
+        const value = formData[field as keyof typeof formData] as string;
+        // Phone number must be exactly 10 digits
+        return value && !/^\d{10}$/.test(value);
+      });
+    
+    if (invalidPhoneFields.length > 0) {
+      // Get the first invalid field to focus on that section
+      const firstInvalidField = invalidPhoneFields[0];
+      
+      // Determine which section to open
+      let sectionToOpen: keyof typeof openSections = 'pickupDetails';
+      
+      if (firstInvalidField === 'deliveryContactNumber') {
+        sectionToOpen = 'deliveryDetails';
+      }
+      
+      // Open the section that contains the first invalid field
+      setOpenSections(prev => ({
+        ...prev,
+        [sectionToOpen]: true
+      }));
+      
+      // Show error toast with invalid fields
+      let errorMessage = 'Please enter valid 10-digit phone numbers for:';
+      invalidPhoneFields.forEach(field => {
+        errorMessage += `\n• ${fieldLabels[field] || field}`;
+      });
+      
+      toast.error('Invalid Phone Numbers', {
+        description: errorMessage
+      });
+      
+      // Focus on the first invalid field if possible
+      setTimeout(() => {
+        const element = document.getElementById(firstInvalidField);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          element.focus();
+        }
+      }, 100);
+      
+      return;
+    }
+    
+    // Validate pincodes (6 digits)
+    const invalidPincodeFields = pincodeFields
+      .filter(field => {
+        const value = formData[field as keyof typeof formData] as string;
+        // Pincode must be exactly 6 digits
+        return value && !/^\d{6}$/.test(value);
+      });
+    
+    if (invalidPincodeFields.length > 0) {
+      // Get the first invalid field to focus on that section
+      const firstInvalidField = invalidPincodeFields[0];
+      
+      // Determine which section to open
+      let sectionToOpen: keyof typeof openSections = 'pickupDetails';
+      
+      if (firstInvalidField === 'deliveryPincode') {
+        sectionToOpen = 'deliveryDetails';
+      }
+      
+      // Open the section that contains the first invalid field
+      setOpenSections(prev => ({
+        ...prev,
+        [sectionToOpen]: true
+      }));
+      
+      // Show error toast with invalid fields
+      let errorMessage = 'Please enter valid 6-digit pincodes for:';
+      invalidPincodeFields.forEach(field => {
+        errorMessage += `\n• ${fieldLabels[field] || field}`;
+      });
+      
+      toast.error('Invalid Pincodes', {
+        description: errorMessage
+      });
+      
+      // Focus on the first invalid field if possible
+      setTimeout(() => {
+        const element = document.getElementById(firstInvalidField);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          element.focus();
+        }
+      }, 100);
+      
+      return;
+    }
     
     try {
       // Show loading toast
@@ -264,9 +536,30 @@ export default function AddReturnOrderModal({
       toast.dismiss(loadingToast);
       
       if (result.success) {
+        // Check if there are errors in the response even if success is true
+        if (result.data && result.data.errors) {
+          // Show error toast with specific error information
+          const errorDetails = result.data.errors.map((err: any) => {
+            if (err.loc && err.loc.length > 1) {
+              return `${err.loc[1]}: ${err.msg}`;
+            }
+            return err.msg;
+          }).join('\n');
+          
+          toast.error('Failed to create reverse pickup', {
+            description: errorDetails || 'Please check your input data'
+          });
+          return;
+        }
+        
+        // Get the AWB number from the response
+        const awbNumber = result.data?.data?.response?.airwaybilno || 
+                         result.data?.response?.airwaybilno || 
+                         'Pending approval';
+        
         // Show success toast
         toast.success('Reverse pickup created successfully!', {
-          description: `AWB: ${result.data?.data?.response?.airwaybilno || 'Pending approval'}`
+          description: `AWB: ${awbNumber}`
         });
         
         // Close the modal

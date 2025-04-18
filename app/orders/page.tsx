@@ -5,35 +5,22 @@ import { useAuth } from '@/lib/firebase/auth-context';
 import Header from '@/components/Header';
 import OrderDetailsModal from '@/components/OrderDetailsModal';
 import AddReturnOrderModal from '@/components/AddReturnOrderModal';
+import TrackOrderModal from '@/components/TrackOrderModal';
 import { 
   Card, 
   CardContent
 } from '@/components/ui/card';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { 
-  ChevronDown, 
-  ChevronUp, 
   Download, 
   Upload, 
   Search, 
   MoreVertical, 
-  Calendar 
+  Plus
 } from 'lucide-react';
 
 export default function Orders() {
   const { user, loading } = useAuth();
-  const [dateRange, setDateRange] = useState({
-    start: '2025-03-19 00:00',
-    end: '2025-04-18 23:59'
-  });
   
   // Order details modal state
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
@@ -42,13 +29,12 @@ export default function Orders() {
   // Add Return Order modal state
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
+  // Track Order modal state
+  const [isTrackModalOpen, setIsTrackModalOpen] = useState(false);
+
   const openOrderDetails = (order: any) => {
     setSelectedOrder(order);
     setIsOrderModalOpen(true);
-  };
-
-  const openAddReturnOrder = () => {
-    setIsAddModalOpen(true);
   };
 
   // Mock data for returns
@@ -110,21 +96,8 @@ export default function Orders() {
     }
   ];
 
-  // Filter states
-  const [filterStatus, setFilterStatus] = useState('Approved');
+  // Calculate total orders
   const totalOrders = mockReturns.length;
-  const totalAmount = '₹3,607.74';
-
-  // Status counts for the filter menu
-  const statusCounts = {
-    'New Request': 0,
-    'Approved': 33,
-    'Rejected': 0,
-    'Failed': 6,
-    'Refund Initiated': 0,
-    'Refunded': 0,
-    'Refund Failed': 0
-  };
 
   if (loading) {
     return (
@@ -141,218 +114,160 @@ export default function Orders() {
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Header />
       <main className="flex-1 container mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <div className="flex justify-between items-center mb-4">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
           <div className="flex items-center gap-2">
             <div className="bg-gray-200 w-8 h-8 rounded-md flex items-center justify-center text-slate-700">
               📦
             </div>
             <h1 className="text-xl font-semibold">Orders</h1>
           </div>
-          <div className="text-green-600 font-semibold text-xl">{totalAmount}</div>
-        </div>
-
-        {/* Filters section */}
-        <div className="bg-white rounded-lg shadow-sm p-4 mb-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <label className="text-sm text-gray-500 mb-1 block">LSPs</label>
-              <Select defaultValue="ALL">
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="ALL">ALL</SelectItem>
-                  <SelectItem value="EKART">EKART</SelectItem>
-                  <SelectItem value="DELHIVERY">DELHIVERY</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div>
-              <label className="text-sm text-gray-500 mb-1 block">Date</label>
-              <div className="flex items-center gap-2">
-                <div className="relative flex-1">
-                  <Input 
-                    type="text" 
-                    value={dateRange.start} 
-                    onChange={(e) => setDateRange({...dateRange, start: e.target.value})}
-                    className="pr-8"
-                  />
-                  <Calendar className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                </div>
-                <span className="text-gray-400">|</span>
-                <div className="relative flex-1">
-                  <Input 
-                    type="text" 
-                    value={dateRange.end} 
-                    onChange={(e) => setDateRange({...dateRange, end: e.target.value})}
-                    className="pr-8"
-                  />
-                  <Calendar className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                </div>
-              </div>
-            </div>
-            
-            <div>
-              <label className="text-sm text-gray-500 mb-1 block">Search</label>
-              <div className="relative">
-                <Select defaultValue="ALL">
-                  <SelectTrigger className="w-full rounded-r-none absolute left-0 h-full">
-                    <SelectValue placeholder="ALL" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="ALL">ALL</SelectItem>
-                    <SelectItem value="ORDER">ORDER</SelectItem>
-                    <SelectItem value="AWB">AWB</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Input 
-                  type="text" 
-                  placeholder="Search by Order No. / Mobile No. / AWB No. (For bulk search provide ',' separated values)" 
-                  className="pl-20"
-                />
-                <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-              </div>
-            </div>
+          <div className="flex flex-wrap gap-3">
+            <Button 
+              onClick={() => setIsTrackModalOpen(true)}
+              variant="outline"
+              className="flex items-center gap-2"
+            >
+              <Search className="h-4 w-4" />
+              Track Order
+            </Button>
+            <Button 
+              onClick={() => setIsAddModalOpen(true)}
+              className="bg-orange-500 hover:bg-orange-600 text-white"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Add Return Order
+            </Button>
           </div>
         </div>
 
-        {/* Status filter and returns */}
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-          {/* Status filter sidebar */}
-          <div className="md:col-span-1">
-            <Card className="overflow-hidden">
-              <CardContent className="p-0">
-                <div className="bg-orange-50 p-4">
-                  <div className="flex items-center gap-2 text-orange-600">
-                    <span className="text-lg">🔥</span>
-                    <span className="font-medium">Your Return Status</span>
-                  </div>
-                </div>
+        {/* Returns table */}
+        <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+          <div className="p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b">
+            <div className="text-sm text-gray-600">
+              Showing 1 of {totalOrders} of {totalOrders} Returns
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <Button 
+                variant="outline" 
+                className="flex items-center gap-1"
+                onClick={() => setIsAddModalOpen(true)}
+              >
+                <Upload className="h-4 w-4" />
+                <span>Add Returns</span>
+              </Button>
+              <Button variant="outline" className="flex items-center gap-1">
+                <Download className="h-4 w-4" />
+                <span>Export</span>
+              </Button>
+            </div>
+          </div>
 
-                <div className="p-4 border-b">
-                  <div className="flex justify-between items-center">
-                    <h3 className="font-medium">Status</h3>
-                    <ChevronUp className="h-4 w-4 text-gray-500" />
-                  </div>
-                </div>
+          {/* Table header */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 bg-gray-50 p-4 text-sm font-medium text-gray-600 border-b">
+            <div className="hidden md:block">Order Details</div>
+            <div className="hidden md:block">Original Order Details</div>
+            <div className="hidden md:block">Shipping Details</div>
+            <div className="hidden md:block">Return Reason</div>
+            <div className="hidden md:block">Actions</div>
+            <div className="md:hidden">Return Information</div>
+          </div>
 
-                <div className="divide-y">
-                  {Object.entries(statusCounts).map(([status, count]) => (
-                    <div 
-                      key={status}
-                      className={`p-4 flex justify-between items-center cursor-pointer ${
-                        filterStatus === status ? 'bg-purple-50' : ''
-                      }`}
-                      onClick={() => setFilterStatus(status)}
+          {/* Table rows */}
+          <div className="divide-y">
+            {mockReturns.map((returnItem, index) => (
+              <div 
+                key={index} 
+                className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 p-4 text-sm hover:bg-gray-50 cursor-pointer gap-y-3"
+                onClick={() => openOrderDetails(returnItem)}
+              >
+                {/* Mobile view */}
+                <div className="md:hidden col-span-1 sm:col-span-2 space-y-2">
+                  <div>
+                    <span className="font-medium">{returnItem.company}</span> • <span className="text-gray-500">{returnItem.timeAgo}</span>
+                  </div>
+                  <div>
+                    <span className="text-gray-600">AWB:</span> <span className="font-medium">{returnItem.awb}</span>
+                  </div>
+                  <div>
+                    <span className="text-gray-600">From:</span> {returnItem.source}
+                  </div>
+                  <div>
+                    <span className="text-gray-600">To:</span> {returnItem.destination}
+                  </div>
+                  <div>
+                    <span className="text-gray-600">Reason:</span> {returnItem.reason}
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <Button 
+                      variant="outline"
+                      className="bg-green-50 border-green-100 text-green-600 hover:bg-green-100 hover:text-green-700"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        openOrderDetails(returnItem);
+                      }}
                     >
-                      <div className="flex items-center gap-2">
-                        <input 
-                          type="checkbox" 
-                          checked={filterStatus === status}
-                          onChange={() => setFilterStatus(status)}
-                          className="rounded text-purple-600 focus:ring-purple-500"
-                        />
-                        <span className={filterStatus === status ? 'text-purple-700 font-medium' : ''}>{status}</span>
-                      </div>
-                      <span className="text-gray-500">{count}</span>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Returns table */}
-          <div className="md:col-span-4">
-            <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-              <div className="p-4 flex justify-between items-center border-b">
-                <div className="text-sm text-gray-600">
-                  Showing 1 of {totalOrders} of {totalOrders} Returns
-                </div>
-                <div className="flex items-center gap-2">
-                  <Button 
-                    variant="outline" 
-                    className="flex items-center gap-1"
-                    onClick={openAddReturnOrder}
-                  >
-                    <Upload className="h-4 w-4" />
-                    <span>Import / Add Returns</span>
-                  </Button>
-                  <Button variant="outline" className="flex items-center gap-1">
-                    <Download className="h-4 w-4" />
-                    <span>Export</span>
-                  </Button>
-                </div>
-              </div>
-
-              {/* Table header */}
-              <div className="grid grid-cols-5 bg-gray-50 p-4 text-sm font-medium text-gray-600 border-b">
-                <div>Order Details <ChevronDown className="h-4 w-4 inline-block ml-1" /></div>
-                <div>Original Order Details</div>
-                <div>Shipping Details</div>
-                <div>Return Reason</div>
-                <div>Actions</div>
-              </div>
-
-              {/* Table rows */}
-              <div className="divide-y">
-                {mockReturns.map((returnItem, index) => (
-                  <div 
-                    key={index} 
-                    className="grid grid-cols-5 p-4 text-sm hover:bg-gray-50 cursor-pointer"
-                    onClick={() => openOrderDetails(returnItem)}
-                  >
-                    <div>
-                      <div className="font-medium">{returnItem.company} | {returnItem.companyId}</div>
-                      <div>{returnItem.company}</div>
-                      <div className="text-gray-500 text-xs mt-1">{returnItem.user} • {returnItem.timeAgo}</div>
-                    </div>
-                    <div>
-                      <div className="text-gray-600">AWB:</div>
-                      <div className="font-medium">Order Number: {returnItem.awb}</div>
-                    </div>
-                    <div>
-                      <div className="flex items-start gap-2">
-                        <input type="radio" checked readOnly className="mt-1" />
-                        <div>
-                          <div>{returnItem.source}</div>
-                        </div>
-                      </div>
-                      <div className="flex items-start gap-2 mt-2">
-                        <input type="radio" checked readOnly className="mt-1" />
-                        <div>
-                          <div>{returnItem.destination}</div>
-                        </div>
-                      </div>
-                    </div>
-                    <div>{returnItem.reason}</div>
-                    <div className="flex flex-col gap-2">
-                      <Button 
-                        variant="outline"
-                        className="bg-green-50 border-green-100 text-green-600 hover:bg-green-100 hover:text-green-700 w-full justify-center"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          openOrderDetails(returnItem);
-                        }}
-                      >
-                        {returnItem.status}
-                      </Button>
-                      <Button 
-                        variant="ghost" 
-                        size="icon"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          // Show dropdown menu for more actions
-                        }}
-                      >
-                        <MoreVertical className="h-4 w-4" />
-                      </Button>
-                    </div>
+                      {returnItem.status}
+                    </Button>
+                    <Button 
+                      variant="outline"
+                      className="flex items-center gap-1"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedOrder(returnItem);
+                        setIsTrackModalOpen(true);
+                      }}
+                    >
+                      <Search className="h-4 w-4" /> Track
+                    </Button>
                   </div>
-                ))}
+                </div>
+
+                {/* Desktop view */}
+                <div className="hidden md:block">
+                  <div className="font-medium">{returnItem.company} | {returnItem.companyId}</div>
+                  <div>{returnItem.user}</div>
+                  <div className="text-gray-500 text-xs mt-1">{returnItem.timeAgo}</div>
+                </div>
+                <div className="hidden md:block">
+                  <div className="text-gray-600">AWB:</div>
+                  <div className="font-medium">Order Number: {returnItem.awb}</div>
+                </div>
+                <div className="hidden md:block">
+                  <div className="flex items-start gap-2">
+                    <div className="w-2 h-2 rounded-full bg-orange-500 mt-1.5"></div>
+                    <div>{returnItem.source}</div>
+                  </div>
+                  <div className="flex items-start gap-2 mt-2">
+                    <div className="w-2 h-2 rounded-full bg-green-500 mt-1.5"></div>
+                    <div>{returnItem.destination}</div>
+                  </div>
+                </div>
+                <div className="hidden md:block">{returnItem.reason}</div>
+                <div className="hidden md:flex flex-col gap-2">
+                  <Button 
+                    variant="outline"
+                    className="bg-green-50 border-green-100 text-green-600 hover:bg-green-100 hover:text-green-700 w-full justify-center"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      openOrderDetails(returnItem);
+                    }}
+                  >
+                    {returnItem.status}
+                  </Button>
+                  <Button 
+                    variant="outline"
+                    className="flex items-center gap-1 w-full justify-center"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedOrder(returnItem);
+                      setIsTrackModalOpen(true);
+                    }}
+                  >
+                    <Search className="h-4 w-4" /> Track
+                  </Button>
+                </div>
               </div>
-            </div>
+            ))}
           </div>
         </div>
       </main>
@@ -370,6 +285,12 @@ export default function Orders() {
       <AddReturnOrderModal
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
+      />
+      
+      {/* Track Order Modal */}
+      <TrackOrderModal
+        isOpen={isTrackModalOpen}
+        onClose={() => setIsTrackModalOpen(false)}
       />
     </div>
   );

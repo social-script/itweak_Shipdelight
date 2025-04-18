@@ -1,27 +1,28 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/lib/firebase/auth-context';
 import Header from '@/components/Header';
 import OrderDetailsModal from '@/components/OrderDetailsModal';
 import AddReturnOrderModal from '@/components/AddReturnOrderModal';
 import TrackOrderModal from '@/components/TrackOrderModal';
 import { 
-  Card, 
-  CardContent
+  Card
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { 
   Download, 
   Upload, 
   Search, 
-  MoreVertical, 
+  RotateCcw,
   Plus,
-  RotateCcw
+  ChevronDown
 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 export default function Orders() {
   const { user, loading } = useAuth();
+  const router = useRouter();
   
   // Order details modal state
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
@@ -33,6 +34,13 @@ export default function Orders() {
   // Track Order modal state
   const [isTrackModalOpen, setIsTrackModalOpen] = useState(false);
   const [trackingAwb, setTrackingAwb] = useState('');
+
+  // Check authentication and redirect if not logged in
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/login');
+    }
+  }, [user, loading, router]);
 
   const openOrderDetails = (order: any) => {
     setSelectedOrder(order);
@@ -49,9 +57,22 @@ export default function Orders() {
     {
       company: 'GO ALT TECHNOLOGIES',
       companyId: '9741623600',
+      user: 'SD-testing',
+      timeAgo: '13 minutes ago',
+      awb: '',
+      orderNumber: '',
+      source: 'Bangalore, KA (560037)',
+      destination: 'Bangalore, KA (560037)',
+      reason: 'NA',
+      status: 'Rejected'
+    },
+    {
+      company: 'GO ALT TECHNOLOGIES',
+      companyId: '9741623600',
       user: 'R-Dnamitha832C',
-      timeAgo: '2 hours ago',
-      awb: 'SDnamitha',
+      timeAgo: '5 hours ago',
+      awb: '',
+      orderNumber: 'SDnamitha',
       source: 'Mysore, KA (570022)',
       destination: 'Bangalore, KA (560037)',
       reason: 'Replacement',
@@ -61,8 +82,9 @@ export default function Orders() {
       company: 'GO ALT TECHNOLOGIES',
       companyId: '9741623600',
       user: 'R-Ddarshan794F',
-      timeAgo: '9 hours ago',
-      awb: 'SDdarshan',
+      timeAgo: '11 hours ago',
+      awb: '',
+      orderNumber: 'SDdarshan',
       source: 'Bhavnagar, GJ (364002)',
       destination: 'Bangalore, KA (560037)',
       reason: 'Replacement',
@@ -73,7 +95,8 @@ export default function Orders() {
       companyId: '9741623600',
       user: 'R-SDSahil078F',
       timeAgo: 'a day ago',
-      awb: 'SDSahil',
+      awb: '',
+      orderNumber: 'SDSahil',
       source: 'Ahmedabad, GJ (380058)',
       destination: 'Bangalore, KA (560037)',
       reason: 'Replacement',
@@ -84,7 +107,8 @@ export default function Orders() {
       companyId: '9741623600',
       user: 'R-SDRahulADDF',
       timeAgo: 'a day ago',
-      awb: 'SDRahul',
+      awb: '',
+      orderNumber: 'SDRahul',
       source: 'Baroda, GJ (390021)',
       destination: 'Bangalore, KA (560037)',
       reason: 'Replacement',
@@ -95,7 +119,8 @@ export default function Orders() {
       companyId: '9741623600',
       user: 'R-SDKasturi',
       timeAgo: '2 days ago',
-      awb: 'SDKasturi',
+      awb: '',
+      orderNumber: 'SDKasturi',
       source: 'Thane, MH (401303)',
       destination: 'Bangalore, KA (560037)',
       reason: 'Replacement',
@@ -106,12 +131,46 @@ export default function Orders() {
   // Calculate total orders
   const totalOrders = mockReturns.length;
 
+  // Helper function to get status badge styling
+  const getStatusStyle = (status: string) => {
+    switch (status.toLowerCase()) {
+      case 'approved':
+        return 'bg-green-50 border-green-100 text-green-600 hover:bg-green-100 hover:text-green-700';
+      case 'rejected':
+        return 'bg-red-50 border-red-100 text-red-600 hover:bg-red-100 hover:text-red-700';
+      case 'pending':
+        return 'bg-orange-50 border-orange-100 text-orange-600 hover:bg-orange-100 hover:text-orange-700';
+      case 'cancelled':
+        return 'bg-gray-50 border-gray-100 text-gray-600 hover:bg-gray-100 hover:text-gray-700';
+      default:
+        return 'bg-blue-50 border-blue-100 text-blue-600 hover:bg-blue-100 hover:text-blue-700';
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex flex-col">
         <Header />
         <main className="flex-1 container mx-auto px-4 sm:px-6 lg:px-8 py-8 flex items-center justify-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-foreground"></div>
+        </main>
+      </div>
+    );
+  }
+
+  // If not authenticated and not loading, don't render the page content
+  if (!user) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        <main className="flex-1 container mx-auto px-4 sm:px-6 lg:px-8 py-8 flex items-center justify-center">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold mb-4">Authentication Required</h2>
+            <p className="mb-4">Please log in to access this page.</p>
+            <Button onClick={() => router.push('/login')} className="bg-orange-500 hover:bg-orange-600 text-white">
+              Go to Login
+            </Button>
+          </div>
         </main>
       </div>
     );
@@ -171,7 +230,10 @@ export default function Orders() {
 
           {/* Table header */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 bg-gray-50 p-4 text-sm font-medium text-gray-600 border-b">
-            <div className="hidden md:block">Order Details</div>
+            <div className="hidden md:flex items-center">
+              Order Details
+              <ChevronDown className="h-4 w-4 ml-1" />
+            </div>
             <div className="hidden md:block">Original Order Details</div>
             <div className="hidden md:block">Shipping Details</div>
             <div className="hidden md:block">Return Reason</div>
@@ -189,7 +251,7 @@ export default function Orders() {
               >
                 {/* Mobile view */}
                 <div className="md:hidden col-span-1 sm:col-span-2 space-y-2">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <span className="bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full text-xs flex items-center">
                       <RotateCcw className="h-3 w-3 mr-1" />
                       Return
@@ -197,21 +259,28 @@ export default function Orders() {
                     <span className="font-medium">{returnItem.company}</span> • <span className="text-gray-500">{returnItem.timeAgo}</span>
                   </div>
                   <div>
-                    <span className="text-gray-600">AWB:</span> <span className="font-medium">{returnItem.awb}</span>
+                    <span className="text-gray-600">User ID:</span> <span className="font-medium">{returnItem.user}</span>
                   </div>
+                  {returnItem.orderNumber && (
+                    <div>
+                      <span className="text-gray-600">Order Number:</span> <span className="font-medium">{returnItem.orderNumber}</span>
+                    </div>
+                  )}
                   <div>
                     <span className="text-gray-600">From:</span> {returnItem.source}
                   </div>
                   <div>
                     <span className="text-gray-600">To:</span> {returnItem.destination}
                   </div>
-                  <div>
-                    <span className="text-gray-600">Reason:</span> {returnItem.reason}
-                  </div>
+                  {returnItem.reason !== 'NA' && (
+                    <div>
+                      <span className="text-gray-600">Reason:</span> {returnItem.reason}
+                    </div>
+                  )}
                   <div className="flex flex-wrap gap-2">
                     <Button 
                       variant="outline"
-                      className="bg-green-50 border-green-100 text-green-600 hover:bg-green-100 hover:text-green-700"
+                      className={getStatusStyle(returnItem.status)}
                       onClick={(e) => {
                         e.stopPropagation();
                         openOrderDetails(returnItem);
@@ -219,16 +288,18 @@ export default function Orders() {
                     >
                       {returnItem.status}
                     </Button>
-                    <Button 
-                      variant="outline"
-                      className="flex items-center gap-1"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        openTrackOrder(returnItem.awb);
-                      }}
-                    >
-                      <Search className="h-4 w-4" /> Track
-                    </Button>
+                    {returnItem.status === 'Approved' && (
+                      <Button 
+                        variant="outline"
+                        className="flex items-center gap-1"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openTrackOrder(returnItem.orderNumber);
+                        }}
+                      >
+                        <Search className="h-4 w-4" /> Track
+                      </Button>
+                    )}
                   </div>
                 </div>
 
@@ -246,7 +317,9 @@ export default function Orders() {
                 </div>
                 <div className="hidden md:block">
                   <div className="text-gray-600">AWB:</div>
-                  <div className="font-medium">Order Number: {returnItem.awb}</div>
+                  {returnItem.orderNumber && (
+                    <div className="font-medium">Order Number: {returnItem.orderNumber}</div>
+                  )}
                 </div>
                 <div className="hidden md:block">
                   <div className="flex items-start gap-2">
@@ -262,7 +335,7 @@ export default function Orders() {
                 <div className="hidden md:flex flex-col gap-2">
                   <Button 
                     variant="outline"
-                    className="bg-green-50 border-green-100 text-green-600 hover:bg-green-100 hover:text-green-700 w-full justify-center"
+                    className={`${getStatusStyle(returnItem.status)} w-full justify-center`}
                     onClick={(e) => {
                       e.stopPropagation();
                       openOrderDetails(returnItem);
@@ -270,16 +343,18 @@ export default function Orders() {
                   >
                     {returnItem.status}
                   </Button>
-                  <Button 
-                    variant="outline"
-                    className="flex items-center gap-1 w-full justify-center"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      openTrackOrder(returnItem.awb);
-                    }}
-                  >
-                    <Search className="h-4 w-4" /> Track
-                  </Button>
+                  {returnItem.status === 'Approved' && (
+                    <Button 
+                      variant="outline"
+                      className="flex items-center gap-1 w-full justify-center"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        openTrackOrder(returnItem.orderNumber);
+                      }}
+                    >
+                      <Search className="h-4 w-4" /> Track
+                    </Button>
+                  )}
                 </div>
               </div>
             ))}

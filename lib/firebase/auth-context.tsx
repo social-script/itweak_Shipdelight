@@ -12,6 +12,7 @@ import {
 } from 'firebase/auth';
 import { auth, googleProvider } from './firebase-config';
 import { toast } from 'sonner';
+import Cookies from 'js-cookie';
 
 interface AuthContextType {
   user: User | null;
@@ -25,15 +26,57 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// Cookie names
+const AUTH_COOKIE_NAME = 'firebase-auth-token';
+const USER_COOKIE_NAME = 'user-data';
+
+// Cookie options - httpOnly would be better but requires server-side handling
+const COOKIE_OPTIONS = {
+  expires: 7, // 7 days
+  path: '/',
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: 'lax' as const
+};
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [hasValidTokens, setHasValidTokens] = useState(false);
 
+  // Set cookies for authenticated user
+  const setCookiesForUser = async (currentUser: User) => {
+    try {
+      // Get ID token
+      const token = await currentUser.getIdToken();
+      
+      // Set token cookie
+      Cookies.set(AUTH_COOKIE_NAME, token, COOKIE_OPTIONS);
+      
+      // Set minimal user data cookie (non-sensitive info)
+      const userData = {
+        uid: currentUser.uid,
+        displayName: currentUser.displayName,
+        email: currentUser.email,
+        emailVerified: currentUser.emailVerified
+      };
+      
+      Cookies.set(USER_COOKIE_NAME, JSON.stringify(userData), COOKIE_OPTIONS);
+    } catch (error) {
+      console.error('Error setting auth cookies:', error);
+    }
+  };
+
+  // Remove auth cookies
+  const removeCookies = () => {
+    Cookies.remove(AUTH_COOKIE_NAME, { path: '/' });
+    Cookies.remove(USER_COOKIE_NAME, { path: '/' });
+  };
+
   // Check if user has valid tokens
   const checkTokens = async (currentUser: User | null) => {
     if (!currentUser) {
       setHasValidTokens(false);
+      removeCookies();
       return;
     }
     
@@ -41,15 +84,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // This will throw an error if the token is invalid/expired
       const token = await currentUser.getIdToken(false);
       setHasValidTokens(!!token);
+      
+      // Refresh the cookies when we check tokens
+      await setCookiesForUser(currentUser);
     } catch (error) {
       console.error('Error checking tokens:', error);
       setHasValidTokens(false);
+      removeCookies();
     }
   };
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
+      if (user) {
+        // User is signed in, set cookies
+        setCookiesForUser(user);
+      } else {
+        // User is signed out, remove cookies
+        removeCookies();
+      }
       checkTokens(user);
       setLoading(false);
     });
@@ -71,11 +125,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signInWithGoogle = async () => {
     try {
       setLoading(true);
-      await signInWithPopup(auth, googleProvider);
+      const result = await signInWithPopup(auth, googleProvider);
+      await setCookiesForUser(result.user);
       toast.success('Successfully signed in!');
     } catch (error) {
       console.error('Error signing in with Google:', error);
       toast.error('Failed to sign in with Google');
+      removeCookies();
     } finally {
       setLoading(false);
     }
@@ -84,7 +140,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signInWithEmail = async (email: string, password: string) => {
     try {
       setLoading(true);
-      await signInWithEmailAndPassword(auth, email, password);
+      const result = await signInWithEmailAndPassword(auth, email, password);
+      await setCookiesForUser(result.user);
       toast.success('Successfully signed in!');
     } catch (error: any) {
       console.error('Error signing in with email:', error);
@@ -98,6 +155,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
       
       toast.error(errorMessage);
+      removeCookies();
     } finally {
       setLoading(false);
     }
@@ -113,6 +171,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         displayName: displayName
       });
       
+      // Set cookies for the new user
+      await setCookiesForUser(userCredential.user);
+      
       toast.success('Account created successfully!');
     } catch (error: any) {
       console.error('Error creating account:', error);
@@ -127,6 +188,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
       
       toast.error(errorMessage);
+      removeCookies();
     } finally {
       setLoading(false);
     }
@@ -136,6 +198,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       setLoading(true);
       await signOut(auth);
+      removeCookies();
       toast.success('Successfully signed out!');
     } catch (error) {
       console.error('Error signing out:', error);

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/lib/firebase/auth-context';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,10 +8,16 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { LogIn, Mail, UserPlus } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
-export default function LoginForm() {
-  const { signInWithGoogle, signInWithEmail, createUserWithEmail } = useAuth();
+interface LoginFormProps {
+  redirectPath?: string;
+}
+
+export default function LoginForm({ redirectPath = '/dashboard' }: LoginFormProps) {
+  const { user, signInWithGoogle, signInWithEmail, createUserWithEmail } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   // Login form state
   const [loginEmail, setLoginEmail] = useState('');
@@ -22,18 +28,49 @@ export default function LoginForm() {
   const [registerPassword, setRegisterPassword] = useState('');
   const [registerName, setRegisterName] = useState('');
 
+  // Redirect if authenticated
+  useEffect(() => {
+    if (user) {
+      router.push(redirectPath);
+    }
+  }, [user, router, redirectPath]);
+
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    await signInWithEmail(loginEmail, loginPassword);
-    setIsLoading(false);
+    try {
+      await signInWithEmail(loginEmail, loginPassword);
+      // Redirect will happen via the useEffect hook
+    } catch (error) {
+      console.error('Login error:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleEmailRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    await createUserWithEmail(registerEmail, registerPassword, registerName);
-    setIsLoading(false);
+    try {
+      await createUserWithEmail(registerEmail, registerPassword, registerName);
+      // Redirect will happen via the useEffect hook
+    } catch (error) {
+      console.error('Registration error:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    setIsLoading(true);
+    try {
+      await signInWithGoogle();
+      // Redirect will happen via the useEffect hook
+    } catch (error) {
+      console.error('Google sign-in error:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -80,8 +117,17 @@ export default function LoginForm() {
                 className="w-full button-gradient"
                 disabled={isLoading}
               >
-                <Mail className="h-4 w-4 mr-2" />
-                Sign in with Email
+                {isLoading ? (
+                  <span className="flex items-center">
+                    <span className="animate-spin mr-2">○</span>
+                    Signing in...
+                  </span>
+                ) : (
+                  <>
+                    <Mail className="h-4 w-4 mr-2" />
+                    Sign in with Email
+                  </>
+                )}
               </Button>
             </form>
             
@@ -97,11 +143,20 @@ export default function LoginForm() {
             <Button 
               variant="outline" 
               className="w-full hover:text-primary" 
-              onClick={signInWithGoogle}
+              onClick={handleGoogleSignIn}
               disabled={isLoading}
             >
-              <LogIn className="h-4 w-4 mr-2" />
-              Sign in with Google
+              {isLoading ? (
+                <span className="flex items-center">
+                  <span className="animate-spin mr-2">○</span>
+                  Signing in with Google...
+                </span>
+              ) : (
+                <>
+                  <LogIn className="h-4 w-4 mr-2" />
+                  Sign in with Google
+                </>
+              )}
             </Button>
           </TabsContent>
           
@@ -148,8 +203,17 @@ export default function LoginForm() {
                 className="w-full button-gradient"
                 disabled={isLoading}
               >
-                <UserPlus className="h-4 w-4 mr-2" />
-                Create Account
+                {isLoading ? (
+                  <span className="flex items-center">
+                    <span className="animate-spin mr-2">○</span>
+                    Creating Account...
+                  </span>
+                ) : (
+                  <>
+                    <UserPlus className="h-4 w-4 mr-2" />
+                    Create Account
+                  </>
+                )}
               </Button>
             </form>
           </TabsContent>

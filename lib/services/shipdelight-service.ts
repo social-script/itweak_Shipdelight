@@ -142,9 +142,20 @@ export async function createReversePickup(formData: any): Promise<any> {
           name: formData.itemDescription,
           quantity: formData.quantity,
           sku: formData.sku || "",
+          product_id: formData.productId || "",
+          variant_id: formData.variantId || "",
           unit_price: formData.unitPrice,
           actual_weight: formData.actualWeight || formData.weight,
-          return_reasons: formData.reasonForItem || ""
+          item_color: formData.itemColor || "",
+          item_size: formData.itemSize || "",
+          item_category: formData.itemCategory || "",
+          item_image: formData.itemImage || "",
+          item_brand: formData.itemBrand || "",
+          item_imei: formData.itemImei || "",
+          special_ins: formData.specialInstructions || "",
+          return_reasons: formData.reasonForItem || "",
+          item_tag: formData.hasOriginalTag === "none" ? "" : formData.hasOriginalTag || "",
+          item_box: formData.hasOriginalBox === "none" ? "" : formData.hasOriginalBox || ""
         }
       ],
       

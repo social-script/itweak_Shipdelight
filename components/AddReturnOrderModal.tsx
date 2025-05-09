@@ -37,6 +37,7 @@ export default function AddReturnOrderModal({
     itemDetails: true,
     pickupDetails: false,
     deliveryDetails: false,
+    qcDetails: false,
     gstDetails: false
   });
 
@@ -98,6 +99,19 @@ export default function AddReturnOrderModal({
     deliveryAddressLine2: '',
     deliveryCity: 'BANGALORE',
     deliveryState: 'KARNATAKA',
+    
+    // QC Details
+    productId: '',
+    variantId: '',
+    itemColor: '',
+    itemSize: '',
+    itemCategory: '',
+    itemImage: '',
+    itemBrand: '',
+    itemImei: '',
+    specialInstructions: '',
+    hasOriginalTag: 'none',
+    hasOriginalBox: 'none',
     
     // GST Details
     gstNumber: '',
@@ -530,9 +544,20 @@ export default function AddReturnOrderModal({
           name: formData.itemDescription,
           quantity: formData.quantity,
           sku: formData.sku || "",
+          product_id: formData.productId || "",
+          variant_id: formData.variantId || "",
           unit_price: formData.unitPrice,
           actual_weight: formData.actualWeight || formData.weight,
-          return_reasons: formData.reasonForItem || ""
+          item_color: formData.itemColor || "",
+          item_size: formData.itemSize || "",
+          item_category: formData.itemCategory || "",
+          item_image: formData.itemImage || "",
+          item_brand: formData.itemBrand || "",
+          item_imei: formData.itemImei || "",
+          special_ins: formData.specialInstructions || "",
+          return_reasons: formData.reasonForItem || "",
+          item_tag: formData.hasOriginalTag || "Yes",
+          item_box: formData.hasOriginalBox || "Yes"
         }]
       }, null, 2));
       
@@ -1157,6 +1182,158 @@ export default function AddReturnOrderModal({
                         </div>
                       )}
                     </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* QC Details Section */}
+          <div className="border rounded-lg overflow-hidden">
+            <div 
+              className={`flex justify-between items-center p-4 cursor-pointer ${openSections.qcDetails ? 'border-b' : ''} ${openSections.qcDetails ? 'text-red-500' : ''}`}
+              onClick={() => toggleSection('qcDetails')}
+            >
+              <h3 className="font-medium">QC Details</h3>
+              {openSections.qcDetails ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
+            </div>
+
+            {openSections.qcDetails && (
+              <div className="p-4 space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="productId">Product ID</Label>
+                    <Input 
+                      id="productId"
+                      name="productId"
+                      placeholder="Product ID"
+                      value={formData.productId}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="variantId">Variant ID</Label>
+                    <Input 
+                      id="variantId"
+                      name="variantId"
+                      placeholder="Variant ID"
+                      value={formData.variantId}
+                      onChange={handleChange}
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="itemBrand">Brand</Label>
+                    <Input 
+                      id="itemBrand"
+                      name="itemBrand"
+                      placeholder="Brand"
+                      value={formData.itemBrand}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="itemCategory">Category</Label>
+                    <Input 
+                      id="itemCategory"
+                      name="itemCategory"
+                      placeholder="Category"
+                      value={formData.itemCategory}
+                      onChange={handleChange}
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="itemColor">Color</Label>
+                    <Input 
+                      id="itemColor"
+                      name="itemColor"
+                      placeholder="Color"
+                      value={formData.itemColor}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="itemSize">Size</Label>
+                    <Input 
+                      id="itemSize"
+                      name="itemSize"
+                      placeholder="Size"
+                      value={formData.itemSize}
+                      onChange={handleChange}
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="itemImage">Image URL</Label>
+                  <Input 
+                    id="itemImage"
+                    name="itemImage"
+                    placeholder="Image URL"
+                    value={formData.itemImage}
+                    onChange={handleChange}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="itemImei">IMEI Number (for electronics)</Label>
+                  <Input 
+                    id="itemImei"
+                    name="itemImei"
+                    placeholder="IMEI Number"
+                    value={formData.itemImei}
+                    onChange={handleChange}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="specialInstructions">Special Instructions for QC</Label>
+                  <Input 
+                    id="specialInstructions"
+                    name="specialInstructions"
+                    placeholder="Special Instructions"
+                    value={formData.specialInstructions}
+                    onChange={handleChange}
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="hasOriginalTag">Original Tags</Label>
+                    <Select 
+                      value={formData.hasOriginalTag} 
+                      onValueChange={(value) => handleSelectChange('hasOriginalTag', value)}
+                    >
+                      <SelectTrigger id="hasOriginalTag">
+                        <SelectValue placeholder="Original Tags Present?" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">Select Option</SelectItem>
+                        <SelectItem value="Yes">Yes</SelectItem>
+                        <SelectItem value="No">No</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="hasOriginalBox">Original Box/Packaging</Label>
+                    <Select 
+                      value={formData.hasOriginalBox} 
+                      onValueChange={(value) => handleSelectChange('hasOriginalBox', value)}
+                    >
+                      <SelectTrigger id="hasOriginalBox">
+                        <SelectValue placeholder="Original Box Present?" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">Select Option</SelectItem>
+                        <SelectItem value="Yes">Yes</SelectItem>
+                        <SelectItem value="No">No</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
               </div>

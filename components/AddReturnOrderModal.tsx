@@ -103,9 +103,10 @@ export default function AddReturnOrderModal({
     // QC Details
     productId: '',
     variantId: '',
+    itemName: '',
     itemColor: '',
     itemSize: '',
-    itemCategory: '',
+    itemCategory: 'Electronics',
     itemImage: '',
     itemBrand: '',
     itemImei: '',
@@ -541,7 +542,7 @@ export default function AddReturnOrderModal({
       console.log('Submitting payload with line_items:', JSON.stringify({
         ...formData,
         line_items: [{
-          name: formData.itemDescription,
+          name: formData.itemName || formData.itemDescription,
           quantity: formData.quantity,
           sku: formData.sku || "",
           product_id: formData.productId || "",
@@ -550,14 +551,14 @@ export default function AddReturnOrderModal({
           actual_weight: formData.actualWeight || formData.weight,
           item_color: formData.itemColor || "",
           item_size: formData.itemSize || "",
-          item_category: formData.itemCategory || "",
+          item_category: formData.itemCategory || "Electronics",
           item_image: formData.itemImage || "",
           item_brand: formData.itemBrand || "",
           item_imei: formData.itemImei || "",
           special_ins: formData.specialInstructions || "",
           return_reasons: formData.reasonForItem || "",
-          item_tag: formData.hasOriginalTag || "Yes",
-          item_box: formData.hasOriginalBox || "Yes"
+          item_tag: formData.hasOriginalTag === "none" ? "" : formData.hasOriginalTag || "",
+          item_box: formData.hasOriginalBox === "none" ? "" : formData.hasOriginalBox || ""
         }]
       }, null, 2));
       
@@ -1221,6 +1222,17 @@ export default function AddReturnOrderModal({
                       onChange={handleChange}
                     />
                   </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="itemName">Item Name</Label>
+                  <Input 
+                    id="itemName"
+                    name="itemName"
+                    placeholder="Item Name"
+                    value={formData.itemName}
+                    onChange={handleChange}
+                  />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

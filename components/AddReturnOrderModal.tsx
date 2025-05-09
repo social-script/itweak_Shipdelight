@@ -887,7 +887,7 @@ export default function AddReturnOrderModal({
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="Size and fit issue">Size and fit issue</SelectItem>
-                      <SelectItem value="Product Quality">Product Quality</SelectItem>
+                      <SelectItem value="Product quality/comfort">Product Quality</SelectItem>
                       <SelectItem value="Replacement">Replacement</SelectItem>
                       <SelectItem value="Damaged product">Damaged product</SelectItem>
                       <SelectItem value="Wrong product received">Wrong product received</SelectItem>
